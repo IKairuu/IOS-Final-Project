@@ -56,6 +56,7 @@ struct RegistrationFormPage: View {
             RegistrationInputField(userInput: $occupation, label: "Occupation")
                 .padding(.bottom, 20)
             SectionDivider()
+            NavigationStack
             NavigationLink {
                 HomePage()
             } label: {
