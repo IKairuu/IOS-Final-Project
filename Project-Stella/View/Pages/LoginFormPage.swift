@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct LoginFormPage: View {
     @State private var emailInput: String = ""
     @State private var passwordInput: String = ""
     @State private var passwordVisible: Bool = false
     @State private var keepMeSignedIn: Bool = false
+    @State private var switchPage: Bool = false
+    @State private var err: String = ""
     var body: some View {
         VStack {
             MainLogo().padding(.bottom, 30)
@@ -71,29 +74,44 @@ struct LoginFormPage: View {
                 .fontWeight(.black)
                 .foregroundColor(Color.black)
                 .padding(.vertical, 10)
-            NavigationLink {
-                HomePage()
-            } label: {
-                HStack{
-                    Image("google 1")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .padding(5)
-                        .background(Color.white)
-                        .cornerRadius(15)
-                    Spacer()
-                    Text("Continue with Google")
-                    Spacer()
+            NavigationStack {
+                Button {
+                    Task {
+                        do {
+                            try await AuthenticationController().googleSignIn()
+                            // Login Flow Here
+                            try await AuthenticationController().logout()
+                            switchPage.toggle()
+                        } catch AuthenticationError.runtimeError(let errorMessage) {
+                            err = errorMessage
+                        }
+                    }
+                } label: {
+                    HStack{
+                        Image("google 1")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .padding(5)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                        Spacer()
+                        Text("Continue with Google")
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 10)
+                    .fontWeight(.black)
+                    .foregroundColor(Color.black)
+                    .padding()
+                    .background(Design().mainTheme)
+                    .cornerRadius(15)
                 }
             }
-                .frame(maxWidth: .infinity, maxHeight: 10)
-                .fontWeight(.black)
-                .foregroundColor(Color.black)
-                .padding()
-                .background(Design().mainTheme)
-                .cornerRadius(15)
+            .navigationDestination(isPresented: $switchPage) {
+                HomePage()
+            }
+            
             SectionDivider()
-            Toggle("Remember me", isOn: $keepMeSignedIn)
+            Toggle(Auth.auth().currentUser?.uid ?? "Remember me", isOn: $keepMeSignedIn)
                 .toggleStyle(.switch)
             NavigationLink {
                 AuthSelection()
@@ -119,7 +137,6 @@ struct LoginFormPage: View {
         }
     }
 }
-
 
 #Preview {
     LoginFormPage()
