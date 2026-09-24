@@ -15,6 +15,7 @@ struct LoginFormPage: View {
     @State private var keepMeSignedIn: Bool = false
     @State private var switchPage: Bool = false
     @State private var err: String = ""
+    @Environment(AppState.self) private var appState
     var body: some View {
         VStack {
             MainLogo().padding(.bottom, 30)
@@ -59,22 +60,30 @@ struct LoginFormPage: View {
                 }
             }
             .padding(.vertical, 5)
-            NavigationLink {
-                HomePage()
-            } label: {
-                Text("CONFIRM")
-                    .frame(maxWidth: .infinity, maxHeight: 10)
-                    .fontWeight(.black)
-                    .foregroundColor(Color.black)
-                    .padding()
-                    .background(Design().mainTheme)
-                    .cornerRadius(15)
-            }
+            NavigationStack {
+                Button {
+                    Task {
+                        do {
+                            appState.currentUser = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, googleUid: nil, method: "password")
+                            switchPage.toggle()
+                        } catch {
+                            print("Error: \(error)")
+                        }
+                        
+                    }
+                } label: {
+                    Text("CONFIRM")
+                        .frame(maxWidth: .infinity, maxHeight: 10)
+                        .fontWeight(.black)
+                        .foregroundColor(Color.black)
+                        .padding()
+                        .background(Design().mainTheme)
+                        .cornerRadius(15)
+                }
                 Text("OR")
                 .fontWeight(.black)
                 .foregroundColor(Color.black)
                 .padding(.vertical, 10)
-            NavigationStack {
                 Button {
                     Task {
                         do {

@@ -13,6 +13,9 @@ struct RegistrationFormPage: View {
     @State private var password: String = ""
     @State private var occupation: String = ""
     @State private var passwordVisible: Bool = false
+    @State private var switchPage: Bool = false
+    @State private var err: String = ""
+    @Environment(AppState.self) private var appState
     var body: some View {
         VStack {
             MainLogo()
@@ -56,17 +59,29 @@ struct RegistrationFormPage: View {
             RegistrationInputField(userInput: $occupation, label: "Occupation")
                 .padding(.bottom, 20)
             SectionDivider()
-            NavigationStack
-            NavigationLink {
+            NavigationStack {
+                Button {
+                    Task {
+                        do {
+                            appState.currentUser = try await AuthenticationDatasource().registerUser(googleUid: appState.currentGoogleUid!, email: email, username: username, password: password, occupation: occupation, token: appState.token!)
+                            switchPage.toggle()
+                        } catch {
+                            print("Error \(error)")
+                        }
+                        
+                    }
+                } label: {
+                    Text("CONFIRM")
+                        .frame(maxWidth: .infinity, maxHeight: 10)
+                        .fontWeight(.black)
+                        .foregroundColor(Color.black)
+                        .padding()
+                        .background(Color(red: 255/255, green: 213/255, blue: 79/255))
+                        .cornerRadius(15)
+                }
+            }
+            .navigationDestination(isPresented: $switchPage) {
                 HomePage()
-            } label: {
-                Text("CONFIRM")
-                    .frame(maxWidth: .infinity, maxHeight: 10)
-                    .fontWeight(.black)
-                    .foregroundColor(Color.black)
-                    .padding()
-                    .background(Color(red: 255/255, green: 213/255, blue: 79/255))
-                    .cornerRadius(15)
             }
             NavigationLink {
                 AuthSelection()

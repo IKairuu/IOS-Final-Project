@@ -34,6 +34,7 @@ struct AuthSelection: View {
                             print(Auth.auth().currentUser!.uid)
                             let token = try await AuthenticationDatasource().registerUserGoogleAccount(googleUid: Auth.auth().currentUser!.uid, email: Auth.auth().currentUser!.email!)
                             appState.token = token
+                            appState.currentGoogleUid = Auth.auth().currentUser!.uid
                             try await AuthenticationController().logout()
                             switchPage.toggle()
                         } catch AuthenticationError.runtimeError(let errorMessage) {

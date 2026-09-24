@@ -8,17 +8,9 @@
 import SwiftUI
 import SwiftData
 
-@Model
-final class UserModel: Identifiable {
-    var id: UUID
-    var email: String
+struct UserModel: Decodable {
+    var id: String
+    var type: UserType
     var username: String
-    
-    init(id: UUID = UUID(),email: String ,username: String) {
-        self.id = id
-        self.email = email
-        self.username = username
-    }
+    var occupation: String
 }
-
-var testUser = UserModel(id: UUID(uuidString: "550e8400-e29b-41d4-a716-446655440000")!, email: "abandia", username: "Kairu")

@@ -10,5 +10,7 @@ import SwiftUI
 @Observable
 class AppState {
     var token: String?
+    var currentUser: UserModel?
+    var currentGoogleUid: String?
     var isLoggedIn: Bool = false
 }

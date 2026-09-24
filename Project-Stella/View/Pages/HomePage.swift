@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomePage: View {
     @State private var selection: Int = 1
+    @Environment(AppState.self) private var appState
     var body:some View {
         NavigationStack {
             VStack {
@@ -38,7 +39,7 @@ struct HomePage: View {
                 })
             }
             .navigationBarBackButtonHidden(true)
-            .navigationTitle("Welcome \(testUser.username)!")
+            .navigationTitle("Welcome \(appState.currentUser?.username ?? "Guest")!")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing){

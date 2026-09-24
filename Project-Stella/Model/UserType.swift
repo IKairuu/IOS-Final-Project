@@ -7,6 +7,6 @@
 
 import SwiftUI
 
-enum UserType: String {
+enum UserType: String, Decodable {
     case user, admin
 }
