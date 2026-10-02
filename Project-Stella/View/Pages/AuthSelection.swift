@@ -31,7 +31,6 @@ struct AuthSelection: View {
                     Task {
                         do {
                             try await AuthenticationController().googleSignIn()
-                            print(Auth.auth().currentUser!.uid)
                             let token = try await AuthenticationDatasource().registerUserGoogleAccount(googleUid: Auth.auth().currentUser!.uid, email: Auth.auth().currentUser!.email!)
                             appState.token = token
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid

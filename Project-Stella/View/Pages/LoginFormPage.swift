@@ -88,7 +88,8 @@ struct LoginFormPage: View {
                     Task {
                         do {
                             try await AuthenticationController().googleSignIn()
-                            // Login Flow Here
+                            appState.currentUser = try await AuthenticationDatasource().loginUser(username: nil, password: nil, googleUid: Auth.auth().currentUser!.uid, method: "google")
+                            appState.currentGoogleUid = Auth.auth().currentUser!.uid
                             try await AuthenticationController().logout()
                             switchPage.toggle()
                         } catch AuthenticationError.runtimeError(let errorMessage) {

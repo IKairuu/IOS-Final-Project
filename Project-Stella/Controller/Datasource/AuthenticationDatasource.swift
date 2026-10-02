@@ -57,13 +57,13 @@ struct AuthenticationDatasource {
         return response
     }
     
-    func loginUser(username: String, password: String?, googleUid: String?, method: String) async throws -> UserModel{
+    func loginUser(username: String?, password: String?, googleUid: String?, method: String) async throws -> UserModel{
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = loginUserRequest(username: username, password: password, google_uid: googleUid)
+        let body = loginUserRequest(username: username ?? "None", password: password, google_uid: googleUid)
         
         request.httpBody = try JSONEncoder().encode(body)
         

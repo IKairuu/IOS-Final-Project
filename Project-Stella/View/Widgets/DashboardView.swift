@@ -20,8 +20,7 @@ struct DashboardView: View {
                 TopSection()
                 DashboardCompanionPreview()
                 Statistics(statSelection: $statSelection)
-                
-                
+                TaskView()
             }
             .padding(20)
         }
@@ -190,6 +189,18 @@ struct Statistics: View {
             .cornerRadius(15)
             .padding(.horizontal, 10)
             Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 500)
+        .background(Design().secondaryColor)
+        .cornerRadius(15)
+    }
+}
+
+struct TaskView: View {
+    var body: some View {
+        VStack {
+            Text("HEllo")
         }
         .frame(maxWidth: .infinity)
         .frame(height: 500)
