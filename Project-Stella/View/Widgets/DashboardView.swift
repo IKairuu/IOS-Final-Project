@@ -240,19 +240,21 @@ struct TaskView: View {
             .padding(10)
             if selected == 0 {
                 List(Filter().filterAll()) { item in
-                    Text(item.title)
+                    SectionTab(title: item.title, description: item.description, type: item.type, startTime: item.startTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), endTime: item.endTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)))
                 }
                 .contentMargins(.top, 0,for: .scrollContent)
             }
             else if selected == 1 {
                 List(Filter().filterEvent()) { item in
-                    Text(item.title)
+                        EventSectionTab(title: item.title, description: item.description, startTime: item.startTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), endTime: item.endTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)))
                 }
+                .contentMargins(.top, 0,for: .scrollContent)
             }
             else if selected == 2 {
                 List(Filter().filterTask()) { item in
-                    Text(item.title)
+                        TaskSectionTab(title: item.title, description: item.description, startTime: item.startTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), endTime: item.endTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)))
                 }
+                .contentMargins(.top, 0,for: .scrollContent)
             }
         }
         .padding(.bottom, 10)
@@ -262,6 +264,65 @@ struct TaskView: View {
         .cornerRadius(15)
     }
 }
+
+struct SectionTab: View {
+    let title: String
+    let description: String?
+    let type: String
+    let startTime: String
+    let endTime: String
+    var body: some View {
+        VStack(alignment: .leading) {
+                Text(title)
+                .fontWeight(.bold)
+                Text("Time: \(startTime)-\(endTime)")
+                .padding(.bottom, 5)
+                Text("Description:")
+                Text(description ?? "There is no description")
+                .foregroundColor(Color.gray)
+            
+        }
+    }
+}
+
+struct EventSectionTab: View {
+    let title: String
+    let description: String?
+    let startTime: String
+    let endTime: String
+    var body: some View {
+        VStack(alignment: .leading) {
+                Text(title)
+                .fontWeight(.bold)
+                Text("Time: \(startTime)-\(endTime)")
+                .padding(.bottom, 5)
+                Text("Description:")
+                Text(description ?? "There is no description")
+                .foregroundColor(Color.gray)
+            
+        }
+    }
+}
+
+struct TaskSectionTab: View {
+    let title: String
+    let description: String?
+    let startTime: String
+    let endTime: String
+    var body: some View {
+        VStack(alignment: .leading) {
+                Text(title)
+                .fontWeight(.bold)
+                Text("Time: \(startTime)-\(endTime)")
+                .padding(.bottom, 5)
+                Text("Description:")
+                Text(description ?? "There is no description")
+                .foregroundColor(Color.gray)
+            
+        }
+    }
+}
+
 #Preview {
     DashboardView()
 }
