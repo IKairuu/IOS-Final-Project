@@ -11,8 +11,8 @@ import SwiftData
 final class TaskModel: Identifiable {
     var id: UUID
     var eventId: String?
-    var taskName: String
-    var taskDetail: String?
+    var title: String
+    var description: String?
     var priority: Priority
     var complexity: Complexity
     var startTime: Date
@@ -20,8 +20,8 @@ final class TaskModel: Identifiable {
     
     init(id: UUID = UUID(), taskName: String, taskDetail: String? = nil, priority: Priority, complexity: Complexity, startTime: Date, endTime: Date){
         self.id = id
-        self.taskName = taskName
-        self.taskDetail = taskDetail
+        self.title = taskName
+        self.description = taskDetail
         self.priority = priority
         self.complexity = complexity
         self.startTime = startTime

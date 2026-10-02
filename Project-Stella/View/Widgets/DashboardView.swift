@@ -14,13 +14,14 @@ enum ChartSelection: String {
 
 struct DashboardView: View {
     @State private var statSelection: ChartSelection = .priority
+    @State private var selected: Int = 0
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 TopSection()
                 DashboardCompanionPreview()
                 Statistics(statSelection: $statSelection)
-                TaskView()
+                TaskView(selected: $selected)
             }
             .padding(20)
         }
@@ -198,12 +199,65 @@ struct Statistics: View {
 }
 
 struct TaskView: View {
+    @Binding var selected: Int
     var body: some View {
         VStack {
-            Text("HEllo")
+            HStack {
+                Button {
+                    selected = 0
+                } label: {
+                    Text("ALL")
+                        .foregroundColor(.black)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(selected == 0 ? Design().mainTheme : Color.white)
+                        .cornerRadius(20)
+                }
+                Button {
+                    selected = 1
+                } label: {
+                    Text("Event")
+                        .foregroundColor(.black)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(selected == 1 ? Design().mainTheme : Color.white)
+                        .cornerRadius(20)
+                }
+                Button {
+                    selected = 2
+                } label: {
+                    Text("Task")
+                        .foregroundColor(.black)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(selected == 2 ? Design().mainTheme : Color.white)
+                        .cornerRadius(20)
+                }
+            }
+            .padding(10)
+            if selected == 0 {
+                List(Filter().filterAll()) { item in
+                    Text(item.title)
+                }
+                .contentMargins(.top, 0,for: .scrollContent)
+            }
+            else if selected == 1 {
+                List(Filter().filterEvent()) { item in
+                    Text(item.title)
+                }
+            }
+            else if selected == 2 {
+                List(Filter().filterTask()) { item in
+                    Text(item.title)
+                }
+            }
         }
+        .padding(.bottom, 10)
         .frame(maxWidth: .infinity)
-        .frame(height: 500)
+        .frame(height: 300)
         .background(Design().secondaryColor)
         .cornerRadius(15)
     }
