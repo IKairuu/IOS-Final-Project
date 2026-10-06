@@ -7,6 +7,8 @@
 
 import SwiftUI
 
-enum Priority: String {
-    case low, medium, high
+enum Priority: String, CaseIterable, Identifiable {
+    case low = "Low", medium = "Medium", high = "High"
+    
+    var id: String { self.rawValue }
 }

@@ -8,19 +8,7 @@
 import SwiftUI
 
 struct Filter {
-    func filterAll() -> [TaskEventModel] {
-        var list: [TaskEventModel] = []
-        for tasks in testTask {
-            list.append(TaskEventModel(id: tasks.id, title: tasks.title, type: "task",description: tasks.description, startTime: tasks.startTime, endTime: tasks.endTime))
-        }
-        
-        for events in testEvents {
-            list.append(TaskEventModel(id: events.id, title: events.title, type: "event",description: events.description, startTime: events.startTime, endTime: events.endTime))
-        }
-        return  list
-    }
-    
-    func filterTask() -> [TaskModel] {
+func filterTask() -> [TaskModel] {
         var list: [TaskModel] = []
         for task in testTask {
             list.append(task)

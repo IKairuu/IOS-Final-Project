@@ -7,6 +7,8 @@
 
 import SwiftUI
 
-enum Complexity: String {
-    case easy, medium, hard
+enum Complexity: String, CaseIterable, Identifiable {
+    case easy = "Easy", medium = "Medium", hard = "Hard"
+    
+    var id: String { self.rawValue }
 }
