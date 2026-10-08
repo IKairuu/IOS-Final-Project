@@ -8,5 +8,5 @@
 import SwiftUI
 
 struct Core {
-    let baseUrl = "https://fireplace-ellis-treasurer-approval.trycloudflare.com"
+    let baseUrl = "https://barnes-opens-caused-replacing.trycloudflare.com"
 }
