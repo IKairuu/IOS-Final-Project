@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AddTaskView: View {
-    @State private var selectedDate = Date()
+    @State private var selectedStartDate = Date()
+    @State private var selectedEndDate = Date()
     @State private var taskName: String = ""
     @State private var taskDescription: String = ""
     @State private var selectedStartTime = Date.now
@@ -20,7 +21,16 @@ struct AddTaskView: View {
             VStack {
                 DatePicker(
                     "Select Date",
-                    selection: $selectedDate,
+                    selection: $selectedStartDate,
+                    displayedComponents: [.date]
+                )
+                .datePickerStyle(.graphical)
+                .background(Design().secondaryColor)
+                .cornerRadius(20)
+                .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
+                DatePicker(
+                    "Select Date",
+                    selection: $selectedEndDate,
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.graphical)
@@ -100,6 +110,7 @@ struct AddTaskView: View {
                 .padding(.top, 10)
                 
                 Button {
+                    TaskController().addTask(taskName: taskName, taskDescription: taskDescription, startTime: Filter().combine(date: selectedStartDate, time: selectedStartTime), endTime: Filter().combine(date: selectedEndDate, time: selectedEndTime), priority: selectedPriority, complexity: selectedComplexity)
                     //add task logic
                 } label: {
                     Text("CONFIRM")

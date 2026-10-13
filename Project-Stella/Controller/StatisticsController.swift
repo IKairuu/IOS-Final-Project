@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct StatisticsController {
     func priorityStatistics() -> [String: Int]{
         let lowTasks: Int = testTask.filter {$0.priority == Priority.low}.count
