@@ -58,7 +58,9 @@ struct TaskView: View {
                                 }
                             }
                             .onDelete { index in
+                                let removedIds = index.map { events[$0].id }
                                 events.remove(atOffsets: index)
+                                testEvents.removeAll { removedIds.contains($0.id) }
                             }
                         }
                         .contentMargins(.top, 0,for: .scrollContent)
@@ -87,7 +89,9 @@ struct TaskView: View {
                                 
                             }
                             .onDelete { index in
+                                let removedIds = index.map { tasks[$0].id }
                                 tasks.remove(atOffsets: index)
+                                testTask.removeAll { removedIds.contains($0.id) }
                             }
                         }
                         .contentMargins(.top, 0,for: .scrollContent)
@@ -96,6 +100,11 @@ struct TaskView: View {
                 }
             }
             .padding(.bottom, 10)
+            .onAppear {
+                // Reload so tasks and events added from the Add pages show up
+                events = Filter().filterEvent()
+                tasks = Filter().filterTask()
+            }
             .frame(maxWidth: .infinity)
             .frame(height: 300)
             .background(Design().secondaryColor)

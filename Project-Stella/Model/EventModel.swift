@@ -24,7 +24,7 @@ struct EventModel: Identifiable, Hashable {
     }
 }
 
-let testEvents: [EventModel] = [EventModel(id: "550e8400-e29b-41d4-a716-446655440000",
+var testEvents: [EventModel] = [EventModel(id: "550e8400-e29b-41d4-a716-446655440000",
                                  title: "Python Quiz",
                                  description: "Quiz",
                                  startTime: Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: 13, hour: 12, minute: 30))!,

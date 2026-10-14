@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct AddEventView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var errorMessage: String?
+    @State private var showSaved: Bool = false
     @State private var selectedDate = Date()
     @State private var eventName: String = ""
     @State private var eventDetail: String = ""
@@ -64,7 +67,10 @@ struct AddEventView: View {
                 .padding(.horizontal, 10)
                 .padding(.top, 10)
                 Button {
-                    //add task logic
+                    errorMessage = EventController().addEvent(eventName: eventName, eventDetail: eventDetail, startTime: Filter().combine(date: selectedDate, time: selectedStartTime), endTime: Filter().combine(date: selectedDate, time: selectedEndTime))
+                    if errorMessage == nil {
+                        showSaved = true
+                    }
                 } label: {
                     Text("CONFIRM")
                         .foregroundColor(.black)
@@ -78,6 +84,16 @@ struct AddEventView: View {
             }
             .padding(20)
             
+        }
+        .alert("Event added", isPresented: $showSaved) {
+            Button("OK") { dismiss() }
+        } message: {
+            Text("\(eventName) was added to your events.")
+        }
+        .alert("Can't add event", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage ?? "")
         }
     }
 }
