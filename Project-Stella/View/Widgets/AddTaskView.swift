@@ -12,34 +12,16 @@ struct AddTaskView: View {
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
     @State private var selectedStartDate = Date()
-    @State private var selectedEndDate = Date()
+    @State private var selectedEndDate = Date().addingTimeInterval(3600)
     @State private var taskName: String = ""
     @State private var taskDescription: String = ""
-    @State private var selectedStartTime = Date.now
-    @State private var selectedEndTime = Date.now
     @State private var selectedPriority: Priority = .low
     @State private var selectedComplexity: Complexity = .easy
     var body: some View {
         ScrollView {
             VStack {
-                DatePicker(
-                    "Select Date",
-                    selection: $selectedStartDate,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.graphical)
-                .background(Design().secondaryColor)
-                .cornerRadius(20)
-                .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
-                DatePicker(
-                    "Select Date",
-                    selection: $selectedEndDate,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.graphical)
-                .background(Design().secondaryColor)
-                .cornerRadius(20)
-                .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
+                ScheduleSection(startDate: $selectedStartDate, endDate: $selectedEndDate)
+                    .padding(.horizontal, 10)
                 VStack(alignment: .leading) {
                     Text("TASK NAME")
                         .fontWeight(.bold)
@@ -60,24 +42,6 @@ struct AddTaskView: View {
                         .cornerRadius(15)
                 }
                 .padding(10)
-                HStack {
-                    Text("STARTS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedStartTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
-                HStack {
-                    Text("ENDS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedEndTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
                 HStack {
                     VStack(alignment: .leading) {
                         Text("COMPLEXITY")
@@ -113,7 +77,7 @@ struct AddTaskView: View {
                 .padding(.top, 10)
                 
                 Button {
-                    errorMessage = TaskController().addTask(taskName: taskName, taskDescription: taskDescription, startTime: Filter().combine(date: selectedStartDate, time: selectedStartTime), endTime: Filter().combine(date: selectedEndDate, time: selectedEndTime), priority: selectedPriority, complexity: selectedComplexity)
+                    errorMessage = TaskController().addTask(taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
                     if errorMessage == nil {
                         showSaved = true
                     }

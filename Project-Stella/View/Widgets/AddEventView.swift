@@ -11,23 +11,15 @@ struct AddEventView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
-    @State private var selectedDate = Date()
+    @State private var selectedStartDate = Date()
+    @State private var selectedEndDate = Date().addingTimeInterval(3600)
     @State private var eventName: String = ""
     @State private var eventDetail: String = ""
-    @State private var selectedStartTime = Date.now
-    @State private var selectedEndTime = Date.now
     var body: some View {
         ScrollView {
             VStack {
-                DatePicker(
-                    "Select Date",
-                    selection: $selectedDate,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.graphical)
-                .background(Design().secondaryColor)
-                .cornerRadius(20)
-                .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
+                ScheduleSection(startDate: $selectedStartDate, endDate: $selectedEndDate)
+                    .padding(.horizontal, 10)
                 VStack(alignment: .leading) {
                     Text("EVENT NAME")
                         .fontWeight(.bold)
@@ -48,26 +40,8 @@ struct AddEventView: View {
                         .cornerRadius(15)
                 }
                 .padding(10)
-                HStack {
-                    Text("STARTS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedStartTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
-                HStack {
-                    Text("ENDS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedEndTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
                 Button {
-                    errorMessage = EventController().addEvent(eventName: eventName, eventDetail: eventDetail, startTime: Filter().combine(date: selectedDate, time: selectedStartTime), endTime: Filter().combine(date: selectedDate, time: selectedEndTime))
+                    errorMessage = EventController().addEvent(eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
                     if errorMessage == nil {
                         showSaved = true
                     }
