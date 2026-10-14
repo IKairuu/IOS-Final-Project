@@ -7,7 +7,17 @@
 
 import SwiftUI
 struct CompanionView: View {
+    @State private var selected: Int = 0
     var body: some View {
-        Text("Companion")
+        VStack(spacing: 15) {
+            StellaPageSelector(selected: $selected)
+            if selected == 0 {
+                StellaAnalyzerPage()
+            }
+            else {
+                StellaGeneratorPage()
+            }
+        }
+        .padding(20)
     }
 }
