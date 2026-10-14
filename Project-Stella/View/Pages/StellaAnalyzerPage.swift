@@ -11,6 +11,7 @@ struct StellaAnalyzerPage: View {
     @Environment(AppState.self) private var appState
     @State private var messages: [MessageModel] = testAnalyzerMessages
     @State private var input: String = ""
+    @State private var socket = MessageSocketController(agent: .analyzer)
     var body: some View {
         VStack(spacing: 0) {
             ChatMessageList(messages: messages, initials: userInitials(appState.currentUser?.username))
@@ -19,14 +20,23 @@ struct StellaAnalyzerPage: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Design().secondaryColor)
         .cornerRadius(15)
+        .onAppear(perform: connectSocket)
+        .onDisappear { socket.disconnect() }
     }
     
-    // Placeholder: appends the message locally until the Analyzer agent is wired in
+    // Sends over the Analyzer socket; still shows the message locally if the socket is down
     private func sendMessage() {
         let content = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty else { return }
-        messages.append(MessageModel(sender: .user, content: content))
+        let message = MessageModel(sender: .user, content: content)
+        messages.append(message)
+        socket.send(message, userId: appState.currentUser?.id)
         input = ""
+    }
+    
+    private func connectSocket() {
+        socket.onMessage = { messages.append($0) }
+        socket.connect(token: appState.token)
     }
 }
 

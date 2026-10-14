@@ -12,6 +12,7 @@ struct StellaGeneratorPage: View {
     @State private var messages: [MessageModel] = testGeneratorMessages
     @State private var generatedTasks: [TaskModel] = testGeneratedTasks
     @State private var input: String = ""
+    @State private var socket = MessageSocketController(agent: .generator)
     var body: some View {
         VStack(spacing: 15) {
             VStack(spacing: 0) {
@@ -24,14 +25,24 @@ struct StellaGeneratorPage: View {
             
             GeneratedTasksTable(tasks: generatedTasks, onConfirm: confirmTasks)
         }
+        .onAppear(perform: connectSocket)
+        .onDisappear { socket.disconnect() }
     }
     
-    // Placeholder: appends the message locally until the Task Generator agent is wired in
+    // Sends over the Task Generator socket; still shows the message locally if the socket is down
     private func sendMessage() {
         let content = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty else { return }
-        messages.append(MessageModel(sender: .user, content: content))
+        let message = MessageModel(sender: .user, content: content)
+        messages.append(message)
+        socket.send(message, userId: appState.currentUser?.id)
         input = ""
+    }
+    
+    private func connectSocket() {
+        socket.onMessage = { messages.append($0) }
+        socket.onTasks = { generatedTasks = $0 }
+        socket.connect(token: appState.token)
     }
     
     // Placeholder: saving confirmed tasks is not wired to the backend yet
