@@ -27,6 +27,14 @@ struct AuthenticationDatasource {
         let google_uid: String?
     }
     
+    struct loginUserCredentials: Decodable {
+        let id: String
+        let username: String
+        let type: UserType
+        let occupation: String
+        let token: String
+    }
+    
     func registerUserGoogleAccount(googleUid: String, email: String) async throws -> String {
         let url = URL(string: "\(Core().baseUrl)/users/v1/google/register")!
         var request = URLRequest(url: url)
@@ -57,7 +65,7 @@ struct AuthenticationDatasource {
         return response
     }
     
-    func loginUser(username: String?, password: String?, googleUid: String?, method: String) async throws -> UserModel{
+    func loginUser(username: String?, password: String?, googleUid: String?, method: String) async throws -> [String:Any]{
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -68,7 +76,8 @@ struct AuthenticationDatasource {
         request.httpBody = try JSONEncoder().encode(body)
         
         let (data, _) = try await URLSession.shared.data(for: request)
-        let response = try JSONDecoder().decode(UserModel.self, from: data)
-        return response
+        let response = try JSONDecoder().decode(loginUserCredentials.self, from: data)
+        let userLogin = UserModel(id: response.id, type: response.type, username: response.username, occupation: response.occupation)
+        return ["user": userLogin, "token": response.token]
     }
 }

@@ -64,7 +64,11 @@ struct LoginFormPage: View {
                 Button {
                     Task {
                         do {
-                            appState.currentUser = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, googleUid: nil, method: "password")
+                            let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, googleUid: nil, method: "password")
+                            //Get tasks and Events here
+                            appState.currentUser = login["user"] as! UserModel
+                            appState.token = login["token"] as! String
+                            try await TaskDatasource().getTasks(token: appState.token!)
                             switchPage.toggle()
                         } catch {
                             print("Error: \(error)")
@@ -88,8 +92,11 @@ struct LoginFormPage: View {
                     Task {
                         do {
                             try await AuthenticationController().googleSignIn()
-                            appState.currentUser = try await AuthenticationDatasource().loginUser(username: nil, password: nil, googleUid: Auth.auth().currentUser!.uid, method: "google")
+                            let login = try await AuthenticationDatasource().loginUser(username: nil, password: nil, googleUid: Auth.auth().currentUser!.uid, method: "google")
+                            appState.currentUser = login["user"] as! UserModel
+                            appState.token = login["token"] as! String
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid
+                            try await TaskDatasource().getTasks(token: appState.token!)
                             try await AuthenticationController().logout()
                             switchPage.toggle()
                         } catch AuthenticationError.runtimeError(let errorMessage) {

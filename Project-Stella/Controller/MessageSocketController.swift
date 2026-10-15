@@ -13,7 +13,6 @@ final class MessageSocketController {
     var status: SocketStatus = .disconnected
     var lastError: String?
     
-    // Set by the page: called for every Stella reply and generated task list
     var onMessage: ((MessageModel) -> Void)?
     var onTasks: (([TaskModel]) -> Void)?
     

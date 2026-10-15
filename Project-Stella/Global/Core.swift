@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct Core {
-    let baseUrl = "https://financial-reasonable-jacksonville-click.trycloudflare.com"
-    // Placeholder: replace with the backend WebSocket endpoint
-    let socketUrl = "wss://YOUR-STELLA-BACKEND/ws/messages"
+    let baseUrl = "https://mile-res-leadership-music.trycloudflare.com"
+    let socketUrl = "https://mile-res-leadership-music.trycloudflare.com"
 }
