@@ -64,15 +64,15 @@ struct LoginFormPage: View {
                 Button {
                     Task {
                         do {
+                            err = ""
                             let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, googleUid: nil, method: "password")
-                            //Get tasks and Events here
-                            print(login)
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
-                            try await TaskDatasource().getTasks(token: appState.token!)
-                            switchPage.toggle()
+                            try await loadTasks()
+                            switchPage = true
                         } catch {
-                            print("Error: \(error)")
+                            print("Login error: \(error)")
+                            err = "Could not log in or load your tasks."
                         }
                         
                     }
@@ -97,11 +97,14 @@ struct LoginFormPage: View {
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid
-                            try await TaskDatasource().getTasks(token: appState.token!)
+                            try await loadTasks()
                             try await AuthenticationController().logout()
-                            switchPage.toggle()
+                            switchPage = true
                         } catch AuthenticationError.runtimeError(let errorMessage) {
                             err = errorMessage
+                        } catch {
+                            print("Google login error: \(error)")
+                            err = "Could not log in or load your tasks."
                         }
                     }
                 } label: {
@@ -128,6 +131,12 @@ struct LoginFormPage: View {
                 HomePage()
             }
             
+            if !err.isEmpty {
+                Text(err)
+                    .font(.custom("Roboto-Regular", size: 14))
+                    .foregroundColor(Color.red)
+                    .padding(.top, 5)
+            }
             SectionDivider()
             Toggle(Auth.auth().currentUser?.uid ?? "Remember me", isOn: $keepMeSignedIn)
                 .toggleStyle(.switch)
@@ -149,6 +158,15 @@ struct LoginFormPage: View {
         .padding(40)
         
     } 
+    // Fetches the user's tasks from TaskDatasource and stores them in testTask,
+    // the list the Dashboard, Calendar and statistics read from.
+    func loadTasks() async throws {
+        guard let token = appState.token else {
+            throw AuthenticationError.runtimeError("No token returned from login.")
+        }
+        testTask = try await TaskDatasource().getTasks(token: token)
+    }
+
     func togglePassword(){
         withAnimation(.easeInOut(duration: 0.3)) {
             passwordVisible.toggle()
@@ -158,4 +176,5 @@ struct LoginFormPage: View {
 
 #Preview {
     LoginFormPage()
+        .environment(AppState())
 }
