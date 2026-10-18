@@ -65,7 +65,7 @@ struct LoginFormPage: View {
                     Task {
                         do {
                             err = ""
-                            let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, googleUid: nil, idToken: nil, method: "password")
+                            let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, idToken: nil, method: "password")
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             try await loadTasks()
@@ -94,7 +94,7 @@ struct LoginFormPage: View {
                         do {
                             try await AuthenticationController().googleSignIn()
                             let idToken = try await Auth.auth().currentUser!.getIDToken()
-                            let login = try await AuthenticationDatasource().loginUser(username: nil, password: nil, googleUid: Auth.auth().currentUser!.uid, idToken: idToken, method: "google")
+                            let login = try await AuthenticationDatasource().loginUser(username: nil, password: nil, idToken: idToken, method: "google")
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid

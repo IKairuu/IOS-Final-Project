@@ -25,7 +25,6 @@ struct AuthenticationDatasource {
     struct loginUserRequest: Codable {
         let username: String
         let password: String?
-        let google_uid: String?
         let id_token: String?
     }
     
@@ -67,13 +66,13 @@ struct AuthenticationDatasource {
         return response
     }
     
-    func loginUser(username: String?, password: String?, googleUid: String?, idToken: String?, method: String) async throws -> [String:Any]{
+    func loginUser(username: String?, password: String?, idToken: String?, method: String) async throws -> [String:Any]{
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = loginUserRequest(username: username ?? "None", password: password, google_uid: googleUid, id_token: idToken)
+        let body = loginUserRequest(username: username ?? "None", password: password, id_token: idToken)
         
         request.httpBody = try JSONEncoder().encode(body)
         
