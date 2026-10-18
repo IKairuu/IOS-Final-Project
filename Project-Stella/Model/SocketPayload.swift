@@ -7,35 +7,33 @@
 
 import SwiftUI
 
-// Which Stella agent a chat socket talks to
-enum StellaAgent: String, Codable {
-    case analyzer = "analyzer", generator = "generator"
+// Which Stella agent a socket talks to
+nonisolated enum StellaAgent: String, Codable {
+    case analyzer = "analyzer", generator = "generator", summary = "summary"
+    
+    // Socket.IO event name handled by the backend CompanionGateway
+    var eventName: String {
+        switch self {
+        case .analyzer: return "analyze"
+        case .generator: return "generate"
+        case .summary: return "summary"
+        }
+    }
 }
 
 enum SocketStatus {
     case disconnected, connecting, connected
 }
 
-// Placeholder: payload shapes until the backend WebSocket contract is decided
-struct OutgoingSocketMessage: Encodable {
-    var type: String = "message"
+// Mirrors the backend companion Message DTO {id, agent, message}
+nonisolated struct OutgoingSocketMessage: Encodable {
+    var id: String
     var agent: StellaAgent
-    var userId: String?
-    var messageId: String
-    var content: String
-    var sentAt: Date
-}
-
-struct IncomingSocketMessage: Decodable {
-    var type: String
-    var messageId: String?
-    var content: String?
-    var sentAt: Date?
-    var tasks: [GeneratedTaskPayload]?
+    var message: String
 }
 
 // Mirrors the Task Generator output {tasks[], message}
-struct GeneratedTaskPayload: Decodable {
+nonisolated struct GeneratedTaskPayload: Decodable {
     var title: String
     var description: String?
     var priority: String
@@ -43,7 +41,7 @@ struct GeneratedTaskPayload: Decodable {
     var startTime: Date
     var endTime: Date
     
-    func toTaskModel() -> TaskModel {
+    @MainActor func toTaskModel() -> TaskModel {
         TaskModel(id: UUID().uuidString,
                   taskName: title,
                   taskDetail: description,
