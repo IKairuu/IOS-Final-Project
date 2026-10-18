@@ -10,6 +10,7 @@ import SwiftUI
 struct AuthenticationDatasource {
     struct registerUserGoogleAccountRequest: Codable {
         let googleId: String
+        let id_token: String
         let email: String
     }
     
@@ -25,6 +26,7 @@ struct AuthenticationDatasource {
         let username: String
         let password: String?
         let google_uid: String?
+        let id_token: String?
     }
     
     struct loginUserCredentials: Decodable {
@@ -35,13 +37,13 @@ struct AuthenticationDatasource {
         let token: String
     }
     
-    func registerUserGoogleAccount(googleUid: String, email: String) async throws -> String {
+    func registerUserGoogleAccount(googleUid: String, idToken: String, email: String) async throws -> String {
         let url = URL(string: "\(Core().baseUrl)/users/v1/google/register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = registerUserGoogleAccountRequest(googleId: googleUid, email: email)
+        let body = registerUserGoogleAccountRequest(googleId: googleUid, id_token: idToken, email: email)
         
         request.httpBody = try JSONEncoder().encode(body)
         
@@ -65,13 +67,13 @@ struct AuthenticationDatasource {
         return response
     }
     
-    func loginUser(username: String?, password: String?, googleUid: String?, method: String) async throws -> [String:Any]{
+    func loginUser(username: String?, password: String?, googleUid: String?, idToken: String?, method: String) async throws -> [String:Any]{
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = loginUserRequest(username: username ?? "None", password: password, google_uid: googleUid)
+        let body = loginUserRequest(username: username ?? "None", password: password, google_uid: googleUid, id_token: idToken)
         
         request.httpBody = try JSONEncoder().encode(body)
         
