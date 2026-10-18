@@ -23,4 +23,27 @@ final class TaskController: ObservableObject {
         testTask.append(newTask)
         return nil
     }
+    
+    // Placeholder: updates the task in the local test data until the backend is wired in.
+    // Returns an error message, or nil when the task was updated.
+    func updateTask(taskId: String, taskName: String, taskDescription: String, startTime: Date, endTime: Date, priority: Priority, complexity: Complexity) -> String? {
+        let name = taskName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if name.isEmpty {
+            return "Please enter a task name."
+        }
+        if endTime <= startTime {
+            return "The end time must be after the start time."
+        }
+        guard let index = testTask.firstIndex(where: { $0.id == taskId }) else {
+            return "This task no longer exists."
+        }
+        let detail = taskDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        testTask[index].title = name
+        testTask[index].description = detail.isEmpty ? nil : detail
+        testTask[index].startTime = startTime
+        testTask[index].endTime = endTime
+        testTask[index].priority = priority
+        testTask[index].complexity = complexity
+        return nil
+    }
 }

@@ -8,23 +8,33 @@
 import SwiftUI
 
 struct EventManagementView: View {
-    @Binding var selectedEvent: EventModel
+    @Environment(\.dismiss) private var dismiss
+    let event: EventModel
+    @State private var errorMessage: String?
+    @State private var showSaved: Bool = false
+    @State private var selectedStartDate: Date
+    @State private var selectedEndDate: Date
+    @State private var eventName: String
+    @State private var eventDetail: String
+
+    init(event: EventModel) {
+        self.event = event
+        // Open the page pre-filled with the event's current values
+        _selectedStartDate = State(initialValue: event.startTime)
+        _selectedEndDate = State(initialValue: event.endTime)
+        _eventName = State(initialValue: event.title)
+        _eventDetail = State(initialValue: event.description ?? "")
+    }
+
     var body: some View {
         ScrollView {
             VStack {
-                DatePicker(
-                    "Select Date",
-                    selection: $selectedEvent.startTime,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.graphical)
-                .background(Design().secondaryColor)
-                .cornerRadius(20)
-                .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
+                ScheduleSection(startDate: $selectedStartDate, endDate: $selectedEndDate)
+                    .padding(.horizontal, 10)
                 VStack(alignment: .leading) {
                     Text("EVENT NAME")
                         .fontWeight(.bold)
-                    TextField("Enter event name", text: $selectedEvent.title)
+                    TextField("Enter event name", text: $eventName)
                         .padding(10)
                         .background(Color(red: 242/255, green: 242/255, blue: 247/255))
                         .cornerRadius(15)
@@ -34,35 +44,20 @@ struct EventManagementView: View {
                 VStack(alignment: .leading) {
                     Text("EVENT DETAIL")
                         .fontWeight(.bold)
-                    TextField("Enter event description", text: Binding(get: {selectedEvent.description ?? ""}, set: {selectedEvent.description = $0.isEmpty ? nil : $0}), axis: .vertical)
+                    TextField("Enter event description", text: $eventDetail, axis: .vertical)
                         .lineLimit(3, reservesSpace: true)
                         .padding(10)
                         .background(Color(red: 242/255, green: 242/255, blue: 247/255))
                         .cornerRadius(15)
                 }
                 .padding(10)
-                HStack {
-                    Text("STARTS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedEvent.startTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
-                HStack {
-                    Text("ENDS AT")
-                        .fontWeight(.bold)
-                    Spacer()
-                    DatePicker("Selected Time", selection: $selectedEvent.endTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
                 Button {
-                    //add task logic
+                    errorMessage = EventController().updateEvent(eventId: event.id, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
+                    if errorMessage == nil {
+                        showSaved = true
+                    }
                 } label: {
-                    Text("CONFIRM")
+                    Text("SAVE CHANGES")
                         .foregroundColor(.black)
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity)
@@ -73,7 +68,25 @@ struct EventManagementView: View {
                 }
             }
             .padding(20)
-            
+
         }
+        .navigationTitle("Edit Event")
+        .navigationBarTitleDisplayMode(.inline)
+        .alert("Event updated", isPresented: $showSaved) {
+            Button("OK") { dismiss() }
+        } message: {
+            Text("\(eventName) was updated.")
+        }
+        .alert("Can't update event", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage ?? "")
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        EventManagementView(event: testEvents[0])
     }
 }

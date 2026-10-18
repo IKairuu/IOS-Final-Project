@@ -50,9 +50,7 @@ struct TaskView: View {
                         List {
                             ForEach(events) { item in
                                 NavigationLink{
-                                    if let index = events.firstIndex(where: { $0.id == item.id }) {
-                                        EventManagementView(selectedEvent: $events[index])
-                                    }
+                                    EventManagementView(event: item)
                                 } label:  {
                                     EventSectionTab(title: item.title, description: item.description, startTime: item.startTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), endTime: item.endTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)))
                                 }
@@ -80,9 +78,7 @@ struct TaskView: View {
                         List {
                             ForEach(tasks) { item in
                                 NavigationLink{
-                                    if let index = tasks.firstIndex(where: { $0.id == item.id }) {
-                                        TaskManagementView(selectedTask: $tasks[index])
-                                    }
+                                    TaskManagementView(task: item)
                                 } label:  {
                                     TaskSectionTab(title: item.title, description: item.description, startTime: item.startTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), endTime: item.endTime.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)))
                                 }
@@ -101,7 +97,7 @@ struct TaskView: View {
             }
             .padding(.bottom, 10)
             .onAppear {
-                // Reload so tasks and events added from the Add pages show up
+                // Reload so tasks and events added or edited on the Add and Edit pages show up
                 events = Filter().filterEvent()
                 tasks = Filter().filterTask()
             }
