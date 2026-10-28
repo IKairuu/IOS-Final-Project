@@ -50,6 +50,10 @@ struct EventDatasource {
         try await TaskDatasource().send(method: "PATCH", path: "/events/v1", token: token, body: body)
     }
 
+    func deleteEvent(token: String, id: String) async throws {
+        try await TaskDatasource().send(method: "DELETE", path: "/events/v1/\(id)", token: token, body: nil as String?)
+    }
+
     func getEvents(token: String) async throws -> [EventModel] {
         let url = URL(string: "\(Core().baseUrl)/events/v1")!
 

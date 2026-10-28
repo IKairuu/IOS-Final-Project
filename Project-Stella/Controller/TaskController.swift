@@ -68,4 +68,24 @@ final class TaskController: ObservableObject {
             return "Could not update the task. Please try again."
         }
     }
+    
+    func deleteTasks(token: String?, ids: [String]) async -> String? {
+        guard !ids.isEmpty else { return nil }
+        let backup = testTask
+        testTask.removeAll { ids.contains($0.id) }
+        guard let token else {
+            testTask = backup
+            return "You are not logged in."
+        }
+        do {
+            for id in ids {
+                try await TaskDatasource().deleteTask(token: token, id: id)
+            }
+            testTask = try await TaskDatasource().getTasks(token: token)
+            return nil
+        } catch {
+            testTask = (try? await TaskDatasource().getTasks(token: token)) ?? backup
+            return "Could not delete the task. Please try again."
+        }
+    }
 }

@@ -10,6 +10,8 @@ import SwiftUI
 struct TaskView: View {
     @Binding var selected: Int
     var date: Date = Date()
+    @Environment(AppState.self) private var appState
+    @State private var errorMessage: String?
     @State private var events: [EventModel] = []
     @State private var tasks: [TaskModel] = []
     @State private var all: [ScheduleItem] = []
@@ -33,7 +35,7 @@ struct TaskView: View {
                                 eventRow(item)
                             }
                             .onDelete { index in
-                                deleteEvents(index.map { events[$0].id })
+                                delete(eventIds: index.map { events[$0].id })
                             }
                         }
                         .contentMargins(.top, 0,for: .scrollContent)
@@ -51,7 +53,7 @@ struct TaskView: View {
                                 taskRow(item)
                             }
                             .onDelete { index in
-                                deleteTasks(index.map { tasks[$0].id })
+                                delete(taskIds: index.map { tasks[$0].id })
                             }
                         }
                         .contentMargins(.top, 0,for: .scrollContent)
@@ -73,8 +75,8 @@ struct TaskView: View {
                             }
                             .onDelete { index in
                                 let removed = index.map { all[$0] }
-                                deleteEvents(removed.compactMap { if case .event(let event) = $0 { return event.id } else { return nil } })
-                                deleteTasks(removed.compactMap { if case .task(let task) = $0 { return task.id } else { return nil } })
+                                delete(eventIds: removed.compactMap { if case .event(let event) = $0 { return event.id } else { return nil } },
+                                       taskIds: removed.compactMap { if case .task(let task) = $0 { return task.id } else { return nil } })
                             }
                         }
                         .contentMargins(.top, 0,for: .scrollContent)
@@ -84,6 +86,11 @@ struct TaskView: View {
             .padding(.bottom, 10)
             .onAppear(perform: reload)
             .onChange(of: date) { reload() }
+            .alert("Can't delete", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage ?? "")
+            }
             .frame(maxWidth: .infinity)
             .frame(height: 300)
             .background(Design().secondaryColor)
@@ -133,16 +140,23 @@ struct TaskView: View {
         all = Filter().filterAll(on: date)
     }
 
-    private func deleteEvents(_ ids: [String]) {
-        guard !ids.isEmpty else { return }
-        testEvents.removeAll { ids.contains($0.id) }
-        reload()
-    }
-
-    private func deleteTasks(_ ids: [String]) {
-        guard !ids.isEmpty else { return }
-        testTask.removeAll { ids.contains($0.id) }
-        reload()
+    private func delete(eventIds: [String] = [], taskIds: [String] = []) {
+        guard !eventIds.isEmpty || !taskIds.isEmpty else { return }
+        let token = appState.token
+        Task {
+            let taskError = await TaskController().deleteTasks(token: token, ids: taskIds)
+            let eventError = await EventController().deleteEvents(token: token, ids: eventIds)
+            errorMessage = taskError ?? eventError
+            reload()
+        }
+        events.removeAll { eventIds.contains($0.id) }
+        tasks.removeAll { taskIds.contains($0.id) }
+        all = Filter().filterAll(on: date).filter { item in
+            switch item {
+            case .event(let event): return !eventIds.contains(event.id)
+            case .task(let task): return !taskIds.contains(task.id)
+            }
+        }
     }
 }
 

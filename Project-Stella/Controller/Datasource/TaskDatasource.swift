@@ -99,6 +99,10 @@ struct TaskDatasource {
         try await send(method: "PATCH", path: "/tasks/v1", token: token, body: body)
     }
 
+    func deleteTask(token: String, id: String) async throws {
+        try await send(method: "DELETE", path: "/tasks/v1/\(id)", token: token, body: nil as String?)
+    }
+
     func send<Body: Encodable>(method: String, path: String, token: String, body: Body?) async throws {
         let url = URL(string: "\(Core().baseUrl)\(path)")!
 

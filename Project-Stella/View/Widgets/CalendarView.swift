@@ -58,4 +58,5 @@ struct CalendarView: View {
 
 #Preview {
     CalendarView()
+        .environment(AppState())
 }

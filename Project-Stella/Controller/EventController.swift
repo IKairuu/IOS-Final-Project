@@ -62,4 +62,27 @@ final class EventController: ObservableObject {
             return "Could not update the event. Please try again."
         }
     }
+    
+    func deleteEvents(token: String?, ids: [String]) async -> String? {
+        guard !ids.isEmpty else { return nil }
+        let backup = testEvents
+        testEvents.removeAll { ids.contains($0.id) }
+        guard let token else {
+            testEvents = backup
+            return "You are not logged in."
+        }
+        do {
+            for id in ids {
+                try await EventDatasource().deleteEvent(token: token, id: id)
+            }
+            testEvents = try await EventDatasource().getEvents(token: token)
+            if let tasks = try? await TaskDatasource().getTasks(token: token) {
+                testTask = tasks
+            }
+            return nil
+        } catch {
+            testEvents = (try? await EventDatasource().getEvents(token: token)) ?? backup
+            return "Could not delete the event. Please try again."
+        }
+    }
 }
