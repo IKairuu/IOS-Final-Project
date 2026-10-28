@@ -23,12 +23,10 @@ struct Project_StellaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
         WindowGroup {
-            NavigationStack{
-                AuthSelection()
-                    .onOpenURL { url in
+            RootView()
+                .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
-            }
         }
         .environment(appState)
     }

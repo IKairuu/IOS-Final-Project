@@ -43,8 +43,10 @@ struct HomePage: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing){
-                    NavigationLink {
-                        AuthSelection()
+                    Button {
+                        Task {
+                            await SessionController().logout(appState: appState)
+                        }
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                     }

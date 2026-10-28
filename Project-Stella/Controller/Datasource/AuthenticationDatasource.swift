@@ -26,6 +26,7 @@ struct AuthenticationDatasource {
         let username: String
         let password: String?
         let id_token: String?
+        let create_session: Bool
     }
     
     struct loginUserCredentials: Decodable {
@@ -66,13 +67,13 @@ struct AuthenticationDatasource {
         return response
     }
     
-    func loginUser(username: String?, password: String?, idToken: String?, method: String) async throws -> [String:Any]{
+    func loginUser(username: String?, password: String?, idToken: String?, createSession: Bool, method: String) async throws -> [String:Any]{
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = loginUserRequest(username: username ?? "None", password: password, id_token: idToken)
+        let body = loginUserRequest(username: username ?? "None", password: password, id_token: idToken, create_session: createSession)
         
         request.httpBody = try JSONEncoder().encode(body)
         

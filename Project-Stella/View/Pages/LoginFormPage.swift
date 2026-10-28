@@ -65,10 +65,11 @@ struct LoginFormPage: View {
                     Task {
                         do {
                             err = ""
-                            let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, idToken: nil, method: "password")
+                            let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, idToken: nil, createSession: keepMeSignedIn, method: "password")
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             try await loadTasks()
+                            SessionController().rememberSession(token: appState.token, keepSignedIn: keepMeSignedIn)
                             switchPage = true
                         } catch {
                             print("Login error: \(error)")
@@ -94,11 +95,12 @@ struct LoginFormPage: View {
                         do {
                             try await AuthenticationController().googleSignIn()
                             let idToken = try await Auth.auth().currentUser!.getIDToken()
-                            let login = try await AuthenticationDatasource().loginUser(username: nil, password: nil, idToken: idToken, method: "google")
+                            let login = try await AuthenticationDatasource().loginUser(username: nil, password: nil, idToken: idToken, createSession: keepMeSignedIn, method: "google")
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid
                             try await loadTasks()
+                            SessionController().rememberSession(token: appState.token, keepSignedIn: keepMeSignedIn)
                             try await AuthenticationController().logout()
                             switchPage = true
                         } catch AuthenticationError.runtimeError(let errorMessage) {
@@ -139,7 +141,8 @@ struct LoginFormPage: View {
                     .padding(.top, 5)
             }
             SectionDivider()
-            Toggle(Auth.auth().currentUser?.uid ?? "Remember me", isOn: $keepMeSignedIn)
+            Toggle("Remember me", isOn: $keepMeSignedIn)
+                .font(.custom("Roboto-Regular", size: 14))
                 .toggleStyle(.switch)
             NavigationLink {
                 AuthSelection()
