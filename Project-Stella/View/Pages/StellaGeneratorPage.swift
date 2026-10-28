@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StellaGeneratorPage: View {
     @Environment(AppState.self) private var appState
-    @State private var messages: [MessageModel] = testGeneratorMessages
+    @State private var messages: [MessageModel] = []
     @State private var generatedTasks: [TaskModel] = testGeneratedTasks
     @State private var input: String = ""
     @State private var socket = MessageSocketController(agent: .generator)
@@ -40,6 +40,9 @@ struct StellaGeneratorPage: View {
     }
     
     private func connectSocket() {
+        if messages.isEmpty {
+            messages = appState.generatorMessages
+        }
         socket.onMessage = { messages.append($0) }
         socket.onTasks = { generatedTasks = $0 }
         socket.connect(token: appState.token)

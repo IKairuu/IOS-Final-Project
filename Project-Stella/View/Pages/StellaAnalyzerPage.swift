@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StellaAnalyzerPage: View {
     @Environment(AppState.self) private var appState
-    @State private var messages: [MessageModel] = testAnalyzerMessages
+    @State private var messages: [MessageModel] = []
     @State private var input: String = ""
     @State private var socket = MessageSocketController(agent: .analyzer)
     var body: some View {
@@ -35,6 +35,9 @@ struct StellaAnalyzerPage: View {
     }
     
     private func connectSocket() {
+        if messages.isEmpty {
+            messages = appState.analyzerMessages
+        }
         socket.onMessage = { messages.append($0) }
         socket.connect(token: appState.token)
     }

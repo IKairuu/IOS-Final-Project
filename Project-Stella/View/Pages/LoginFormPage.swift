@@ -68,7 +68,7 @@ struct LoginFormPage: View {
                             let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, idToken: nil, createSession: keepMeSignedIn, method: "password")
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
-                            try await loadTasks()
+                            try await loadUserData()
                             SessionController().rememberSession(token: appState.token, keepSignedIn: keepMeSignedIn)
                             switchPage = true
                         } catch {
@@ -99,7 +99,7 @@ struct LoginFormPage: View {
                             appState.currentUser = login["user"] as? UserModel
                             appState.token = login["token"] as? String
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid
-                            try await loadTasks()
+                            try await loadUserData()
                             SessionController().rememberSession(token: appState.token, keepSignedIn: keepMeSignedIn)
                             try await AuthenticationController().logout()
                             switchPage = true
@@ -162,13 +162,11 @@ struct LoginFormPage: View {
         .padding(40)
         
     } 
-    // Fetches the user's tasks from TaskDatasource and stores them in testTask,
-    // the list the Dashboard, Calendar and statistics read from.
-    func loadTasks() async throws {
+    func loadUserData() async throws {
         guard let token = appState.token else {
             throw AuthenticationError.runtimeError("No token returned from login.")
         }
-        testTask = try await TaskDatasource().getTasks(token: token)
+        try await SessionController().loadUserData(token: token, appState: appState)
     }
 
     func togglePassword(){

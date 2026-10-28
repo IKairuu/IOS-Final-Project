@@ -19,4 +19,6 @@ class AppState {
     var isLoggedIn: Bool = false
     var sessionStatus: SessionStatus = .checking
     var rootId = UUID()
+    var analyzerMessages: [MessageModel] = []
+    var generatorMessages: [MessageModel] = []
 }

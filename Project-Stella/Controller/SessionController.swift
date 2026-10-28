@@ -18,7 +18,7 @@ struct SessionController {
         do {
             let user = try await SessionDatasource().verifySession(token: token)
             do {
-                testTask = try await TaskDatasource().getTasks(token: token)
+                try await loadUserData(token: token, appState: appState)
             } catch let error as URLError where error.code == .badServerResponse {
                 throw SessionDatasource.SessionError.rejected
             }
@@ -33,6 +33,13 @@ struct SessionController {
             print("restoreSession error: \(error)")
             appState.sessionStatus = .signedOut
         }
+    }
+
+    func loadUserData(token: String, appState: AppState) async throws {
+        testTask = try await TaskDatasource().getTasks(token: token)
+        testEvents = try await EventDatasource().getEvents(token: token)
+        appState.analyzerMessages = (try? await MessageDatasource().getMessages(token: token, agent: .analyzer)) ?? []
+        appState.generatorMessages = (try? await MessageDatasource().getMessages(token: token, agent: .generator)) ?? []
     }
 
     func rememberSession(token: String?, keepSignedIn: Bool) {
@@ -53,6 +60,9 @@ struct SessionController {
         appState.currentGoogleUid = nil
         appState.isLoggedIn = false
         testTask = []
+        testEvents = []
+        appState.analyzerMessages = []
+        appState.generatorMessages = []
         appState.sessionStatus = .signedOut
         appState.rootId = UUID()
     }
