@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EventManagementView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
     let event: EventModel
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
@@ -51,9 +52,11 @@ struct EventManagementView: View {
                 }
                 .padding(10)
                 Button {
-                    errorMessage = EventController().updateEvent(eventId: event.id, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
-                    if errorMessage == nil {
-                        showSaved = true
+                    Task {
+                        errorMessage = await EventController().updateEvent(token: appState.token, eventId: event.id, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
+                        if errorMessage == nil {
+                            showSaved = true
+                        }
                     }
                 } label: {
                     Text("SAVE CHANGES")
@@ -88,4 +91,5 @@ struct EventManagementView: View {
     NavigationStack {
         EventManagementView(event: testEvents[0])
     }
+    .environment(AppState())
 }

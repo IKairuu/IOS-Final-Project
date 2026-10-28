@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddEventView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
     @State private var selectedStartDate = Date()
@@ -41,9 +42,11 @@ struct AddEventView: View {
                 }
                 .padding(10)
                 Button {
-                    errorMessage = EventController().addEvent(eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
-                    if errorMessage == nil {
-                        showSaved = true
+                    Task {
+                        errorMessage = await EventController().addEvent(token: appState.token, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
+                        if errorMessage == nil {
+                            showSaved = true
+                        }
                     }
                 } label: {
                     Text("CONFIRM")
@@ -74,4 +77,5 @@ struct AddEventView: View {
 
 #Preview {
     AddEventView()
+        .environment(AppState())
 }

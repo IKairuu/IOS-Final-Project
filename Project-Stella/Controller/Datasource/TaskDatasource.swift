@@ -80,6 +80,50 @@ struct TaskDatasource {
         }
     }
 
+    nonisolated struct TaskRequest: Encodable {
+        let id: String?
+        let event_id: String?
+        let task_name: String
+        let task_detail: String?
+        let priority: String
+        let complexity: String
+        let start_time: String
+        let end_time: String
+    }
+
+    func createTask(token: String, body: TaskRequest) async throws {
+        try await send(method: "POST", path: "/tasks/v1", token: token, body: body)
+    }
+
+    func editTask(token: String, body: TaskRequest) async throws {
+        try await send(method: "PATCH", path: "/tasks/v1", token: token, body: body)
+    }
+
+    func send<Body: Encodable>(method: String, path: String, token: String, body: Body?) async throws {
+        let url = URL(string: "\(Core().baseUrl)\(path)")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if let body {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try JSONEncoder().encode(body)
+        }
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            print("\(method) \(path) failed: \(String(data: data, encoding: .utf8) ?? "")")
+            throw URLError(.badServerResponse)
+        }
+    }
+
+    nonisolated static func isoString(_ date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
+    }
+
     nonisolated static func decodeDate(_ decoder: Decoder) throws -> Date {
         let text = try decoder.singleValueContainer().decode(String.self)
         let withFraction = ISO8601DateFormatter()

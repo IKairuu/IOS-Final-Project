@@ -8,7 +8,7 @@ import SwiftUI
 internal import Combine
 
 final class EventController: ObservableObject {
-    func addEvent(eventName: String, eventDetail: String, startTime: Date, endTime: Date) -> String? {
+    func addEvent(token: String?, eventName: String, eventDetail: String, startTime: Date, endTime: Date) async -> String? {
         let name = eventName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
             return "Please enter an event name."
@@ -16,13 +16,25 @@ final class EventController: ObservableObject {
         if endTime <= startTime {
             return "The end time must be after the start time."
         }
+        guard let token else {
+            return "You are not logged in."
+        }
         let detail = eventDetail.trimmingCharacters(in: .whitespacesAndNewlines)
-        let newEvent = EventModel(id: UUID().uuidString, title: name, description: detail.isEmpty ? nil : detail, startTime: startTime, endTime: endTime)
-        testEvents.append(newEvent)
-        return nil
+        let body = EventDatasource.EventRequest(id: nil,
+                                                title: name,
+                                                description: detail.isEmpty ? nil : detail,
+                                                start_time: TaskDatasource.isoString(startTime),
+                                                end_time: TaskDatasource.isoString(endTime))
+        do {
+            try await EventDatasource().createEvent(token: token, body: body)
+            testEvents = try await EventDatasource().getEvents(token: token)
+            return nil
+        } catch {
+            return "Could not save the event. Please try again."
+        }
     }
     
-    func updateEvent(eventId: String, eventName: String, eventDetail: String, startTime: Date, endTime: Date) -> String? {
+    func updateEvent(token: String?, eventId: String, eventName: String, eventDetail: String, startTime: Date, endTime: Date) async -> String? {
         let name = eventName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
             return "Please enter an event name."
@@ -30,14 +42,24 @@ final class EventController: ObservableObject {
         if endTime <= startTime {
             return "The end time must be after the start time."
         }
-        guard let index = testEvents.firstIndex(where: { $0.id == eventId }) else {
+        guard testEvents.contains(where: { $0.id == eventId }) else {
             return "This event no longer exists."
         }
+        guard let token else {
+            return "You are not logged in."
+        }
         let detail = eventDetail.trimmingCharacters(in: .whitespacesAndNewlines)
-        testEvents[index].title = name
-        testEvents[index].description = detail.isEmpty ? nil : detail
-        testEvents[index].startTime = startTime
-        testEvents[index].endTime = endTime
-        return nil
+        let body = EventDatasource.EventRequest(id: eventId,
+                                                title: name,
+                                                description: detail.isEmpty ? nil : detail,
+                                                start_time: TaskDatasource.isoString(startTime),
+                                                end_time: TaskDatasource.isoString(endTime))
+        do {
+            try await EventDatasource().editEvent(token: token, body: body)
+            testEvents = try await EventDatasource().getEvents(token: token)
+            return nil
+        } catch {
+            return "Could not update the event. Please try again."
+        }
     }
 }

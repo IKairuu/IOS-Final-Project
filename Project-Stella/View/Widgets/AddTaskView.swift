@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddTaskView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
     @State private var selectedStartDate = Date()
@@ -77,9 +78,11 @@ struct AddTaskView: View {
                 .padding(.top, 10)
                 
                 Button {
-                    errorMessage = TaskController().addTask(taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
-                    if errorMessage == nil {
-                        showSaved = true
+                    Task {
+                        errorMessage = await TaskController().addTask(token: appState.token, taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
+                        if errorMessage == nil {
+                            showSaved = true
+                        }
                     }
                 } label: {
                     Text("CONFIRM")
@@ -110,4 +113,5 @@ struct AddTaskView: View {
 
 #Preview {
     AddTaskView()
+        .environment(AppState())
 }

@@ -8,6 +8,7 @@ import SwiftUI
 
 struct TaskManagementView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
     let task: TaskModel
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
@@ -88,9 +89,11 @@ struct TaskManagementView: View {
                 .padding(.top, 10)
 
                 Button {
-                    errorMessage = TaskController().updateTask(taskId: task.id, taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
-                    if errorMessage == nil {
-                        showSaved = true
+                    Task {
+                        errorMessage = await TaskController().updateTask(token: appState.token, taskId: task.id, taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
+                        if errorMessage == nil {
+                            showSaved = true
+                        }
                     }
                 } label: {
                     Text("SAVE CHANGES")
@@ -125,4 +128,5 @@ struct TaskManagementView: View {
     NavigationStack {
         TaskManagementView(task: testTask[0])
     }
+    .environment(AppState())
 }

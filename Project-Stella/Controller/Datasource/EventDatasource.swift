@@ -34,6 +34,22 @@ struct EventDatasource {
         let data: [EventResponse]?
     }
 
+    nonisolated struct EventRequest: Encodable {
+        let id: String?
+        let title: String
+        let description: String?
+        let start_time: String
+        let end_time: String
+    }
+
+    func createEvent(token: String, body: EventRequest) async throws {
+        try await TaskDatasource().send(method: "POST", path: "/events/v1", token: token, body: body)
+    }
+
+    func editEvent(token: String, body: EventRequest) async throws {
+        try await TaskDatasource().send(method: "PATCH", path: "/events/v1", token: token, body: body)
+    }
+
     func getEvents(token: String) async throws -> [EventModel] {
         let url = URL(string: "\(Core().baseUrl)/events/v1")!
 
