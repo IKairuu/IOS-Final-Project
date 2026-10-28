@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct TaskDatasource {
-    // One task as the backend sends it. Accepts snake_case (task_name, start_time)
-    // and camelCase (taskName, startTime) keys so it works with either Prisma naming.
     nonisolated struct TaskResponse: Decodable {
         let id: String
         let eventId: String?
@@ -45,7 +43,6 @@ struct TaskDatasource {
         }
     }
 
-    // The list may come back bare ([...]) or wrapped ({"tasks": [...]} / {"data": [...]})
     private nonisolated struct WrappedTasks: Decodable {
         let tasks: [TaskResponse]?
         let data: [TaskResponse]?
@@ -71,12 +68,10 @@ struct TaskDatasource {
         decoder.dateDecodingStrategy = .custom(TaskDatasource.decodeDate)
 
         do {
-            // Bare list: [...]
             let firstChar = String(decoding: data, as: UTF8.self).first { !$0.isWhitespace }
             if firstChar == "[" {
                 return try decoder.decode([TaskResponse].self, from: data).map { $0.toTaskModel() }
             }
-            // Wrapped list: {"tasks": [...]} or {"data": [...]}
             let wrapped = try decoder.decode(WrappedTasks.self, from: data)
             return (wrapped.tasks ?? wrapped.data ?? []).map { $0.toTaskModel() }
         } catch {
@@ -85,7 +80,6 @@ struct TaskDatasource {
         }
     }
 
-    // Prisma sends ISO 8601 dates, usually with milliseconds ("2026-10-15T12:00:00.000Z")
     nonisolated static func decodeDate(_ decoder: Decoder) throws -> Date {
         let text = try decoder.singleValueContainer().decode(String.self)
         let withFraction = ISO8601DateFormatter()
@@ -97,7 +91,6 @@ struct TaskDatasource {
     }
 }
 
-// Lets TaskResponse look up a value under any of several key names
 nonisolated struct AnyKey: CodingKey {
     var stringValue: String
     var intValue: Int? { nil }

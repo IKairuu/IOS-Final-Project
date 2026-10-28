@@ -19,7 +19,6 @@ struct EventManagementView: View {
 
     init(event: EventModel) {
         self.event = event
-        // Open the page pre-filled with the event's current values
         _selectedStartDate = State(initialValue: event.startTime)
         _selectedEndDate = State(initialValue: event.endTime)
         _eventName = State(initialValue: event.title)

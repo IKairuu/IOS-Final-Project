@@ -67,7 +67,6 @@ struct ScheduleSection: View {
             }
         }
         .onChange(of: startDate) { oldValue, newValue in
-            // Keep the same length when the start moves past the end
             if endDate <= newValue {
                 let length = max(endDate.timeIntervalSince(oldValue), 3600)
                 endDate = newValue.addingTimeInterval(length)

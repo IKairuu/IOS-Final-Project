@@ -103,7 +103,6 @@ struct DashboardCompanionPreview: View {
             .onAppear(perform: connectSocket)
             .onDisappear { socket.disconnect() }
             .onChange(of: socket.status) { _, status in
-                // Ask once per connection until a summary arrives
                 if status == .connected && summary == nil {
                     socket.requestSummary(userId: appState.currentUser?.id)
                 }
@@ -111,7 +110,6 @@ struct DashboardCompanionPreview: View {
         
     }
     
-    // Shown until the summary agent sends the first summary
     private var statusText: String {
         switch socket.status {
         case .connected: return "Stella is analyzing your schedule..."

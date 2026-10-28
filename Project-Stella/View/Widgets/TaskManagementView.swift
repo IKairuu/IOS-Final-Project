@@ -20,7 +20,6 @@ struct TaskManagementView: View {
 
     init(task: TaskModel) {
         self.task = task
-        // Open the page pre-filled with the task's current values
         _selectedStartDate = State(initialValue: task.startTime)
         _selectedEndDate = State(initialValue: task.endTime)
         _taskName = State(initialValue: task.title)

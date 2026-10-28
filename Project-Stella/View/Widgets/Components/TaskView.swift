@@ -97,7 +97,6 @@ struct TaskView: View {
             }
             .padding(.bottom, 10)
             .onAppear {
-                // Reload so tasks and events added or edited on the Add and Edit pages show up
                 events = Filter().filterEvent()
                 tasks = Filter().filterTask()
             }

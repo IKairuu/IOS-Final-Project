@@ -8,8 +8,6 @@ import SwiftUI
 internal import Combine
 
 final class TaskController: ObservableObject {
-    // Placeholder: saves to the local test data until the backend is wired in.
-    // Returns an error message, or nil when the task was added.
     func addTask(taskName: String, taskDescription: String, startTime: Date, endTime: Date, priority: Priority, complexity: Complexity) -> String? {
         let name = taskName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
@@ -24,8 +22,6 @@ final class TaskController: ObservableObject {
         return nil
     }
     
-    // Placeholder: updates the task in the local test data until the backend is wired in.
-    // Returns an error message, or nil when the task was updated.
     func updateTask(taskId: String, taskName: String, taskDescription: String, startTime: Date, endTime: Date, priority: Priority, complexity: Complexity) -> String? {
         let name = taskName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {

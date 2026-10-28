@@ -29,7 +29,6 @@ struct StellaGeneratorPage: View {
         .onDisappear { socket.disconnect() }
     }
     
-    // Sends over the Task Generator socket; still shows the message locally if the socket is down
     private func sendMessage() {
         let content = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty else { return }
@@ -48,7 +47,6 @@ struct StellaGeneratorPage: View {
         socket.connect(token: appState.token)
     }
     
-    // Placeholder: saving confirmed tasks is not wired to the backend yet
     private func confirmTasks() {
         generatedTasks.removeAll()
     }

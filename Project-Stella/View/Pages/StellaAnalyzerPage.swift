@@ -24,7 +24,6 @@ struct StellaAnalyzerPage: View {
         .onDisappear { socket.disconnect() }
     }
     
-    // Sends over the Analyzer socket; still shows the message locally if the socket is down
     private func sendMessage() {
         let content = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !content.isEmpty else { return }

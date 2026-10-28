@@ -8,8 +8,6 @@ import SwiftUI
 internal import Combine
 
 final class EventController: ObservableObject {
-    // Placeholder: saves to the local test data until the backend is wired in.
-    // Returns an error message, or nil when the event was added.
     func addEvent(eventName: String, eventDetail: String, startTime: Date, endTime: Date) -> String? {
         let name = eventName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
@@ -24,8 +22,6 @@ final class EventController: ObservableObject {
         return nil
     }
     
-    // Placeholder: updates the event in the local test data until the backend is wired in.
-    // Returns an error message, or nil when the event was updated.
     func updateEvent(eventId: String, eventName: String, eventDetail: String, startTime: Date, endTime: Date) -> String? {
         let name = eventName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {
