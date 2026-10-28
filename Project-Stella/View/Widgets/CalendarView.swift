@@ -23,7 +23,7 @@ struct CalendarView: View {
                     .background(Design().secondaryColor)
                     .cornerRadius(20)
                     .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
-                    TaskView(selected: $selected)
+                    TaskView(selected: $selected, date: selectedDate)
                     HStack {
                         NavigationLink {
                             AddTaskView()

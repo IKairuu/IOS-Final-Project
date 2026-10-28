@@ -32,7 +32,7 @@ struct TopSection: View {
     var body: some View {
         HStack {
             HStack(spacing: 10) {
-                Text("\(testTask.count)")
+                Text("\(Filter().filterTask().count)")
                     .font(.custom("Roboto-Black", size: 50))
                     .fontWeight(.black)
                     .frame(width: 80, height: 100)
@@ -50,7 +50,7 @@ struct TopSection: View {
             .padding(.leading, 10)
             Spacer()
             HStack(spacing: 10) {
-                Text("\(testTask.count)")
+                Text("\(Filter().filterEvent().count)")
                     .font(.custom("Roboto-Black", size: 50))
                     .fontWeight(.black)
                     .frame(width: 80, height: 100)

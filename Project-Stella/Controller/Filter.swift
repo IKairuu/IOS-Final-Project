@@ -8,21 +8,31 @@
 import SwiftUI
 
 struct Filter {
-func filterTask() -> [TaskModel] {
-        var list: [TaskModel] = []
-    for task in testTask {
-            list.append(task)
-        }
-        return list
+    func filterTask(on date: Date = Date()) -> [TaskModel] {
+        testTask
+            .filter { isOnDay(start: $0.startTime, end: $0.endTime, date: date) }
+            .sorted { $0.startTime < $1.startTime }
     }
-    func filterEvent() -> [EventModel] {
-        var list: [EventModel] = []
-        for events in testEvents {
-            list.append(events)
-        }
-        return list
+
+    func filterEvent(on date: Date = Date()) -> [EventModel] {
+        testEvents
+            .filter { isOnDay(start: $0.startTime, end: $0.endTime, date: date) }
+            .sorted { $0.startTime < $1.startTime }
     }
-    
+
+    func filterAll(on date: Date = Date()) -> [ScheduleItem] {
+        let events = filterEvent(on: date).map { ScheduleItem.event($0) }
+        let tasks = filterTask(on: date).map { ScheduleItem.task($0) }
+        return (events + tasks).sorted { $0.startTime < $1.startTime }
+    }
+
+    private func isOnDay(start: Date, end: Date, date: Date) -> Bool {
+        let calendar = Calendar.current
+        let dayStart = calendar.startOfDay(for: date)
+        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
+        return (start < dayEnd && end > dayStart) || calendar.isDate(start, inSameDayAs: date)
+    }
+
     func combine(date: Date, time: Date) -> Date {
         let cal = Calendar.current
         let d = cal.dateComponents([.year, .month, .day], from: date)
