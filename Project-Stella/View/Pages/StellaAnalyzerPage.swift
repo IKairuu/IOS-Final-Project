@@ -21,6 +21,7 @@ struct StellaAnalyzerPage: View {
         .background(Design().secondaryColor)
         .cornerRadius(15)
         .onAppear(perform: connectSocket)
+        .task { await loadHistory() }
         .onDisappear { socket.disconnect() }
     }
     
@@ -39,6 +40,11 @@ struct StellaAnalyzerPage: View {
         }
         socket.onMessage = { messages.append($0) }
         socket.connect(token: appState.token)
+    }
+    
+    private func loadHistory() async {
+        await MessageController().fetchMessages(token: appState.token, agent: .analyzer, appState: appState)
+        messages = MessageController().mergeMessages(history: appState.analyzerMessages, local: messages)
     }
 }
 

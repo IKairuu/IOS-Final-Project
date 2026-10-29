@@ -16,7 +16,7 @@ struct MessageDatasource {
 
         init(from decoder: Decoder) throws {
             let c = try decoder.container(keyedBy: AnyKey.self)
-            id = try c.first(String.self, ["id"])
+            id = (try? c.first(String.self, ["id"])) ?? UUID().uuidString
             message = try c.first(String.self, ["message"])
             isUser = try c.first(Bool.self, ["is_user", "isUser"])
             messageAt = try c.first(Date.self, ["message_at", "messageAt"])
@@ -33,7 +33,9 @@ struct MessageDatasource {
     }
 
     func getMessages(token: String, agent: StellaAgent) async throws -> [MessageModel] {
-        let url = URL(string: "\(Core().baseUrl)/messages/v1/\(agent.rawValue)")!
+        var components = URLComponents(string: "\(Core().baseUrl)/messages/v1")!
+        components.queryItems = [URLQueryItem(name: "type", value: agent.rawValue)]
+        let url = components.url!
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -59,6 +61,6 @@ struct MessageDatasource {
             let wrapped = try decoder.decode(WrappedMessages.self, from: data)
             messages = wrapped.messages ?? wrapped.data ?? []
         }
-        return messages.sorted { $0.messageAt < $1.messageAt }.map { $0.toMessageModel() }
+        return messages.map { $0.toMessageModel() }
     }
 }

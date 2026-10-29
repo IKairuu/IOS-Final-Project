@@ -26,6 +26,7 @@ struct StellaGeneratorPage: View {
             GeneratedTasksTable(tasks: generatedTasks, onConfirm: confirmTasks)
         }
         .onAppear(perform: connectSocket)
+        .task { await loadHistory() }
         .onDisappear { socket.disconnect() }
     }
     
@@ -45,6 +46,11 @@ struct StellaGeneratorPage: View {
         socket.onMessage = { messages.append($0) }
         socket.onTasks = { generatedTasks = $0 }
         socket.connect(token: appState.token)
+    }
+    
+    private func loadHistory() async {
+        await MessageController().fetchMessages(token: appState.token, agent: .generator, appState: appState)
+        messages = MessageController().mergeMessages(history: appState.generatorMessages, local: messages)
     }
     
     private func confirmTasks() {
