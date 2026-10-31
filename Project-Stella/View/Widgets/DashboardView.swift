@@ -36,7 +36,7 @@ struct TopSection: View {
                     .font(.custom("Roboto-Black", size: 50))
                     .fontWeight(.black)
                     .frame(width: 80, height: 100)
-                    .background(Color.white)
+                    .background(Design().cardColor)
                     .cornerRadius(15)
                     
                 VStack(spacing: 5) {
@@ -54,7 +54,7 @@ struct TopSection: View {
                     .font(.custom("Roboto-Black", size: 50))
                     .fontWeight(.black)
                     .frame(width: 80, height: 100)
-                    .background(Color.white)
+                    .background(Design().cardColor)
                     .cornerRadius(15)
                     
                 VStack(spacing: 5) {
@@ -82,6 +82,10 @@ struct DashboardCompanionPreview: View {
                 VStack {
                     HStack{
                         Image("chat logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 32, height: 32)
+                            .clipShape(Circle())
                         Text("Stella AI")
                             .fontWeight(.bold)
                         Spacer()
@@ -159,7 +163,7 @@ struct Statistics: View {
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: 200)
-                .background(Color.white)
+                .background(Design().cardColor)
                 .cornerRadius(15)
                 .padding(.horizontal, 10)
                 
@@ -179,7 +183,7 @@ struct Statistics: View {
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: 200)
-                .background(Color.white)
+                .background(Design().cardColor)
                 .cornerRadius(15)
                 .padding(.horizontal, 10)
 
@@ -208,7 +212,7 @@ struct Statistics: View {
             .chartForegroundStyleScale(["Workload": Design().statWorkColor, "Vacancy": Design().statVacColor])
             .padding(10)
             .frame(maxWidth: .infinity, maxHeight: 200)
-            .background(Color.white)
+            .background(Design().cardColor)
             .cornerRadius(15)
             .padding(.horizontal, 10)
             Spacer()

@@ -39,7 +39,7 @@ struct TaskManagementView: View {
                         .fontWeight(.bold)
                     TextField("Enter task name", text: $taskName)
                         .padding(10)
-                        .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                        .background(Design().secondaryColor)
                         .cornerRadius(15)
                 }
                 .padding(.horizontal, 10)
@@ -50,7 +50,7 @@ struct TaskManagementView: View {
                     TextField("Enter task description", text: $taskDescription, axis: .vertical)
                         .lineLimit(3, reservesSpace: true)
                         .padding(10)
-                        .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                        .background(Design().secondaryColor)
                         .cornerRadius(15)
                 }
                 .padding(10)
@@ -66,7 +66,7 @@ struct TaskManagementView: View {
                             }
                         }
                         .frame(maxWidth: .infinity)
-                        .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                        .background(Design().secondaryColor)
                         .cornerRadius(20)
                     }
                     VStack(alignment: .leading) {
@@ -80,7 +80,7 @@ struct TaskManagementView: View {
                             }
                         }
                         .frame(maxWidth: .infinity)
-                        .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                        .background(Design().secondaryColor)
                         .cornerRadius(20)
                     }
 
@@ -97,7 +97,7 @@ struct TaskManagementView: View {
                     }
                 } label: {
                     Text("SAVE CHANGES")
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)

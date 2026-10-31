@@ -90,18 +90,18 @@ struct ScheduleRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Circle()
-                .fill(isEnd ? Color.white : Design().mainTheme)
+                .fill(isEnd ? Design().cardColor : Design().mainTheme)
                 .overlay(Circle().stroke(Design().mainTheme, lineWidth: 2))
                 .frame(width: 8, height: 8)
             Text(label)
             Spacer()
             Button(action: onDateTap) {
                 Text(date.formatted(.dateTime.month(.abbreviated).day().year()))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .fontWeight(isOpen ? .semibold : .regular)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(isOpen ? Design().mainTheme.opacity(0.3) : Color.white)
+                    .background(isOpen ? Design().mainTheme.opacity(0.3) : Design().cardColor)
                     .cornerRadius(8)
             }
             DatePicker(label, selection: $date, displayedComponents: .hourAndMinute)

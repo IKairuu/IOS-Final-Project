@@ -15,7 +15,7 @@ struct StellaPageSelector: View {
                 selected = 0
             } label: {
                 Text("STELLA Analyzer")
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity)
                     .frame(height: 40)
@@ -25,7 +25,7 @@ struct StellaPageSelector: View {
                 selected = 1
             } label: {
                 Text("STELLA Task Generator")
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .fontWeight(.bold)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -47,16 +47,16 @@ struct ChatAvatar: View {
             if sender == .user {
                 Text(initials)
                     .font(.custom("Roboto-Bold", size: 20))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .frame(width: 50, height: 50)
-                    .background(Color.white)
+                    .background(Design().cardColor)
             }
             else {
                 Image("chat logo")
                     .resizable()
                     .scaledToFill()
                     .frame(width: 50, height: 50)
-                    .background(Color.black)
+                    .background(Design().mainTheme)
             }
         }
         .clipShape(Circle())
@@ -84,7 +84,7 @@ struct ChatBubble: View {
                 Text(message.content)
                     .font(.custom("Roboto-Regular", size: 13))
                     .lineSpacing(4)
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Design().mainTheme)
@@ -95,7 +95,7 @@ struct ChatBubble: View {
             }
             Text(timestamp)
                 .font(.custom("Roboto-Regular", size: 9))
-                .foregroundColor(.black)
+                .foregroundColor(.gray)
                 .padding(.leading, isUser ? 0 : 58)
                 .padding(.trailing, isUser ? 58 : 0)
         }
@@ -147,7 +147,7 @@ struct ChatInputBar: View {
             Button(action: onSend) {
                 Image(systemName: "paperplane")
                     .font(.system(size: 24))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
             }
             .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }

@@ -29,7 +29,7 @@ struct CalendarView: View {
                             AddTaskView()
                         } label: {
                             Text("ADD TASK")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 50)
@@ -41,7 +41,7 @@ struct CalendarView: View {
                             AddEventView()
                         } label: {
                             Text("ADD EVENT")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 50)

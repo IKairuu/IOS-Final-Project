@@ -133,7 +133,7 @@ struct GeneratedTasksTable: View {
                         Divider()
                     }
                 }
-                .background(Color.white)
+                .background(Design().cardColor)
                 .cornerRadius(10)
             }
             .frame(height: 200)
@@ -141,7 +141,7 @@ struct GeneratedTasksTable: View {
             Button(action: onConfirm) {
                 Text(isSaving ? "SAVING..." : "CONFIRM")
                     .font(.custom("Roboto-Bold", size: 16))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
                     .background(Design().mainTheme)
@@ -165,7 +165,7 @@ struct TableHeader: View {
             Text(label)
         }
         .font(.custom("Roboto-Medium", size: 10))
-        .foregroundColor(.black)
+        .foregroundColor(.white)
         .frame(width: width, alignment: .leading)
     }
 }
@@ -179,7 +179,7 @@ struct TaskTimeCell: View {
             Label(date.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits)), systemImage: "clock")
         }
         .font(.custom("Roboto-Regular", size: 10))
-        .foregroundColor(.black)
+        .foregroundColor(.white)
         .frame(width: width, alignment: .leading)
     }
 }

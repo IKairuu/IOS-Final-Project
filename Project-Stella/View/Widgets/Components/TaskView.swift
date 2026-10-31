@@ -104,11 +104,11 @@ struct TaskView: View {
             selected = tag
         } label: {
             Text(title)
-                .foregroundColor(.black)
+                .foregroundColor(.white)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(selected == tag ? Design().mainTheme : Color.white)
+                .background(selected == tag ? Design().mainTheme : Design().cardColor)
                 .cornerRadius(20)
                 .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
         }

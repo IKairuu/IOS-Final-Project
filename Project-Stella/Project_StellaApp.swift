@@ -24,6 +24,7 @@ struct Project_StellaApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .preferredColorScheme(.dark)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }

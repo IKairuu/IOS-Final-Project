@@ -30,13 +30,13 @@ struct RegistrationFormPage: View {
                     if (passwordVisible){
                         TextField("Enter Password", text: $password)
                             .padding(10)
-                            .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            .background(Design().secondaryColor)
                             .cornerRadius(15)
                     }
                     else{
                         SecureField("Enter Password", text: $password)
                             .padding(10)
-                            .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            .background(Design().secondaryColor)
                             .autocorrectionDisabled(true)
                             .textInputAutocapitalization(.never)
                             .cornerRadius(15)
@@ -45,7 +45,7 @@ struct RegistrationFormPage: View {
                         togglePassword()
                     }){
                         Image(systemName: passwordVisible ? "eye.fill" : "eye.slash.fill")
-                            .foregroundColor(Color.black)
+                            .foregroundColor(Color.white)
                     }
                     
                     
@@ -74,9 +74,9 @@ struct RegistrationFormPage: View {
                     Text("CONFIRM")
                         .frame(maxWidth: .infinity, maxHeight: 10)
                         .fontWeight(.black)
-                        .foregroundColor(Color.black)
+                        .foregroundColor(Color.white)
                         .padding()
-                        .background(Color(red: 255/255, green: 213/255, blue: 79/255))
+                        .background(Design().mainTheme)
                         .cornerRadius(15)
                 }
             }
@@ -89,9 +89,9 @@ struct RegistrationFormPage: View {
                 Text("BACK")
                     .frame(maxWidth: .infinity, maxHeight: 10)
                     .fontWeight(.black)
-                    .foregroundColor(Color.black)
+                    .foregroundColor(Color.white)
                     .padding()
-                    .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                    .background(Design().secondaryColor)
                     .cornerRadius(15)
             }
             Spacer()
@@ -118,7 +118,7 @@ struct RegistrationInputField: View{
                 .font(.custom("Roboto-Regular", size: 14))
             TextField("Enter \(label)", text: $userInput)
                 .padding(10)
-                .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                .background(Design().secondaryColor)
                 .cornerRadius(15)
         }
         .autocorrectionDisabled(true)

@@ -46,9 +46,9 @@ struct AuthSelection: View {
                     Text("Register")
                         .frame(maxWidth: .infinity, maxHeight: 30)
                         .fontWeight(.black)
-                        .foregroundColor(Color.black)
+                        .foregroundColor(Color.white)
                         .padding()
-                        .background(Color(red: 255/255, green: 213/255, blue: 79/255))
+                        .background(Design().mainTheme)
                         .cornerRadius(15)
                 }
             }
@@ -61,9 +61,9 @@ struct AuthSelection: View {
                 Text("Login")
                     .frame(maxWidth: .infinity, maxHeight: 30)
                     .fontWeight(.black)
-                    .foregroundColor(Color.black)
+                    .foregroundColor(Color.white)
                     .padding()
-                    .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                    .background(Design().secondaryColor)
                     .cornerRadius(15)
             }
             Spacer()

@@ -11,7 +11,7 @@ struct SectionDivider: View {
     var body: some View {
         Divider()
             .frame(maxWidth: .infinity, maxHeight: 1)
-            .overlay(Color.black)
+            .overlay(Color.gray.opacity(0.5))
             .padding(.bottom, 20)
     }
 }

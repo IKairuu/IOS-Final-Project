@@ -25,7 +25,7 @@ struct LoginFormPage: View {
                     .font(.custom("Roboto-Regular", size: 14))
                 TextField("Enter Email or Username", text: $emailInput)
                     .padding(10)
-                    .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                    .background(Design().secondaryColor)
                     .cornerRadius(15)
             }
             .autocorrectionDisabled(true)
@@ -39,13 +39,13 @@ struct LoginFormPage: View {
                     if (passwordVisible){
                         TextField("Enter Password", text: $passwordInput)
                             .padding(10)
-                            .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            .background(Design().secondaryColor)
                             .cornerRadius(15)
                     }
                     else{
                         SecureField("Enter Password", text: $passwordInput)
                             .padding(10)
-                            .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+                            .background(Design().secondaryColor)
                             .autocorrectionDisabled(true)
                             .textInputAutocapitalization(.never)
                             .cornerRadius(15)
@@ -54,7 +54,7 @@ struct LoginFormPage: View {
                         togglePassword()
                     }){
                         Image(systemName: passwordVisible ? "eye.fill" : "eye.slash.fill")
-                            .foregroundColor(Color.black)
+                            .foregroundColor(Color.white)
                     }
 
                 }
@@ -81,14 +81,14 @@ struct LoginFormPage: View {
                     Text("CONFIRM")
                         .frame(maxWidth: .infinity, maxHeight: 10)
                         .fontWeight(.black)
-                        .foregroundColor(Color.black)
+                        .foregroundColor(Color.white)
                         .padding()
                         .background(Design().mainTheme)
                         .cornerRadius(15)
                 }
                 Text("OR")
                 .fontWeight(.black)
-                .foregroundColor(Color.black)
+                .foregroundColor(Color.white)
                 .padding(.vertical, 10)
                 Button {
                     Task {
@@ -124,7 +124,7 @@ struct LoginFormPage: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: 10)
                     .fontWeight(.black)
-                    .foregroundColor(Color.black)
+                    .foregroundColor(Color.white)
                     .padding()
                     .background(Design().mainTheme)
                     .cornerRadius(15)
@@ -150,7 +150,7 @@ struct LoginFormPage: View {
                 Text("BACK")
                     .frame(maxWidth: .infinity, maxHeight: 10)
                     .fontWeight(.black)
-                    .foregroundColor(Color.black)
+                    .foregroundColor(Color.white)
                     .padding()
                     .background(Design().backButtonColor)
                     .cornerRadius(15)

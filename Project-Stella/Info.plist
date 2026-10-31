@@ -13,6 +13,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Roboto-Black</string>
