@@ -10,7 +10,10 @@ import SwiftUI
 struct StellaGeneratorPage: View {
     @Environment(AppState.self) private var appState
     @State private var messages: [MessageModel] = []
-    @State private var generatedTasks: [TaskModel] = testGeneratedTasks
+    @State private var generatedTasks: [TaskModel] = []
+    @State private var isSaving = false
+    @State private var showSaved = false
+    @State private var errorMessage: String?
     @State private var input: String = ""
     @State private var socket = MessageSocketController(agent: .generator)
     var body: some View {
@@ -23,11 +26,21 @@ struct StellaGeneratorPage: View {
             .background(Design().secondaryColor)
             .cornerRadius(15)
             
-            GeneratedTasksTable(tasks: generatedTasks, onConfirm: confirmTasks)
+            GeneratedTasksTable(tasks: generatedTasks, isSaving: isSaving, onConfirm: confirmTasks)
         }
         .onAppear(perform: connectSocket)
         .task { await loadHistory() }
         .onDisappear { socket.disconnect() }
+        .alert("Tasks added", isPresented: $showSaved) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("The generated tasks were added to your tasks.")
+        }
+        .alert("Can't add tasks", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
     
     private func sendMessage() {
@@ -54,12 +67,22 @@ struct StellaGeneratorPage: View {
     }
     
     private func confirmTasks() {
-        generatedTasks.removeAll()
+        guard !isSaving else { return }
+        isSaving = true
+        Task {
+            errorMessage = await TaskController().addGeneratedTasks(token: appState.token, tasks: generatedTasks)
+            isSaving = false
+            if errorMessage == nil {
+                generatedTasks.removeAll()
+                showSaved = true
+            }
+        }
     }
 }
 
 struct GeneratedTasksTable: View {
     let tasks: [TaskModel]
+    let isSaving: Bool
     let onConfirm: () -> Void
     
     private let nameWidth: CGFloat = 130
@@ -116,7 +139,7 @@ struct GeneratedTasksTable: View {
             .frame(height: 200)
             
             Button(action: onConfirm) {
-                Text("CONFIRM")
+                Text(isSaving ? "SAVING..." : "CONFIRM")
                     .font(.custom("Roboto-Bold", size: 16))
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity)
@@ -124,7 +147,7 @@ struct GeneratedTasksTable: View {
                     .background(Design().mainTheme)
                     .cornerRadius(10)
             }
-            .disabled(tasks.isEmpty)
+            .disabled(tasks.isEmpty || isSaving)
         }
         .padding(10)
         .background(Design().secondaryColor)

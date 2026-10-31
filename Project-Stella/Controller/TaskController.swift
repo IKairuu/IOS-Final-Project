@@ -37,6 +37,36 @@ final class TaskController: ObservableObject {
         }
     }
     
+    func addGeneratedTasks(token: String?, tasks: [TaskModel]) async -> String? {
+        guard !tasks.isEmpty else {
+            return "There are no generated tasks to save."
+        }
+        guard let token else {
+            return "You are not logged in."
+        }
+        let eventIds = Set(testEvents.map { $0.id })
+        let bodies = tasks.map { task in
+            TaskDatasource.TaskRequest(id: nil,
+                                       event_id: task.eventId.flatMap { eventIds.contains($0) ? $0 : nil },
+                                       task_name: task.title,
+                                       task_detail: task.description,
+                                       priority: task.priority.rawValue.lowercased(),
+                                       complexity: task.complexity.rawValue.lowercased(),
+                                       start_time: TaskDatasource.isoString(task.startTime),
+                                       end_time: TaskDatasource.isoString(task.endTime))
+        }
+        do {
+            try await TaskDatasource().createTasks(token: token, body: TaskDatasource.BulkTaskRequest(tasks: bodies))
+            testTask = try await TaskDatasource().getTasks(token: token)
+            return nil
+        } catch {
+            if let tasks = try? await TaskDatasource().getTasks(token: token) {
+                testTask = tasks
+            }
+            return "Could not save the generated tasks. Please try again."
+        }
+    }
+    
     func updateTask(token: String?, taskId: String, taskName: String, taskDescription: String, startTime: Date, endTime: Date, priority: Priority, complexity: Complexity) async -> String? {
         let name = taskName.trimmingCharacters(in: .whitespacesAndNewlines)
         if name.isEmpty {

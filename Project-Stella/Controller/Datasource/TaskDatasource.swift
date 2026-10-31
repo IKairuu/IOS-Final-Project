@@ -91,8 +91,16 @@ struct TaskDatasource {
         let end_time: String
     }
 
+    nonisolated struct BulkTaskRequest: Encodable {
+        let tasks: [TaskRequest]
+    }
+
     func createTask(token: String, body: TaskRequest) async throws {
         try await send(method: "POST", path: "/tasks/v1", token: token, body: body)
+    }
+
+    func createTasks(token: String, body: BulkTaskRequest) async throws {
+        try await send(method: "POST", path: "/tasks/v1/bulk-create", token: token, body: body)
     }
 
     func editTask(token: String, body: TaskRequest) async throws {
