@@ -53,7 +53,6 @@ struct AuthenticationDatasource {
         
         let (data, _) = try await URLSession.shared.data(for: request)
         let response = try JSONDecoder().decode([String: String].self, from: data)
-        print(response)
         return response["token"]!
     }
     
@@ -73,7 +72,6 @@ struct AuthenticationDatasource {
     }
     
     func loginUser(username: String?, password: String?, idToken: String?, createSession: Bool, method: String) async throws -> [String:Any]{
-        print(idToken)
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

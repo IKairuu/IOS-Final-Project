@@ -63,7 +63,7 @@ struct RegistrationFormPage: View {
                 Button {
                     Task {
                         do {
-                            var request = try await AuthenticationDatasource().registerUser(googleUid: appState.currentGoogleUid!, email: email, username: username, password: password, occupation: occupation, token: appState.token!)
+                            let request = try await AuthenticationDatasource().registerUser(googleUid: appState.currentGoogleUid!, email: email, username: username, password: password, occupation: occupation, token: appState.token!)
                             appState.currentUser = request["user"] as? UserModel
                             appState.token = request["token"] as? String
                             switchPage.toggle()

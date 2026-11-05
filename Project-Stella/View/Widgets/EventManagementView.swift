@@ -88,8 +88,6 @@ struct EventManagementView: View {
 }
 
 #Preview {
-    NavigationStack {
-        EventManagementView(event: testEvents[0])
-    }
+    NavigationStack {}
     .environment(AppState())
 }

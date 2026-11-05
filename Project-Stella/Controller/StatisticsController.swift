@@ -38,8 +38,9 @@ struct StatisticsController {
             "5": ["Day": "Thu", "Vacancy": 24.0, "Workload": 0.0],
             "6": ["Day": "Fri", "Vacancy": 24.0, "Workload": 0.0],
             "7": ["Day": "Sat", "Vacancy": 24.0, "Workload": 0.0],]
-        
+        print(weekDayGroup[7])
         for (dayNum, val) in weekDayGroup {
+            print(val)
             var workload = 0.0
             for dayVals in val {
                 let diffSec = Int(dayVals.endTime.timeIntervalSince(dayVals.startTime))
@@ -49,9 +50,13 @@ struct StatisticsController {
                 if let current = result["\(dayNum)"]?["Vacancy"] as? Double {
                     result["\(dayNum)"]?["Vacancy"] = current - workload
                 }
+                print("\(dayNum): \nHours: \(hours)\nMinutes: \(minutes)\nTotal: \(workload)\ndiffsec: \(diffSec)\n")
+                
             }
+            print("Workload: \(workload) for day: \(dayNum) Vacancy: \(result["\(dayNum)"]?["Vacancy"], default: "None")\n")
             result["\(dayNum)"]?["Workload"] = workload
         }
+        print(result)
         return result
     }
 }
