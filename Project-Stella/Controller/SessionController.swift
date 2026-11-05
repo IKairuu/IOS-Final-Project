@@ -38,8 +38,8 @@ struct SessionController {
     func loadUserData(token: String, appState: AppState) async throws {
         testTask = try await TaskDatasource().getTasks(token: token)
         testEvents = try await EventDatasource().getEvents(token: token)
-        await MessageController().fetchMessages(token: token, agent: .analyzer, appState: appState)
-        await MessageController().fetchMessages(token: token, agent: .generator, appState: appState)
+        await MessageController().fetchMessages(token: token, agent: .analyze, appState: appState)
+        await MessageController().fetchMessages(token: token, agent: .generate, appState: appState)
     }
 
     func rememberSession(token: String?, keepSignedIn: Bool) {

@@ -37,6 +37,11 @@ struct AuthenticationDatasource {
         let token: String
     }
     
+    struct registerUserResponse: Decodable {
+        let credentials: UserModel
+        let token: String
+    }
+    
     func registerUserGoogleAccount(googleUid: String, idToken: String, email: String) async throws -> String {
         let url = URL(string: "\(Core().baseUrl)/users/v1/google/register")!
         var request = URLRequest(url: url)
@@ -44,30 +49,31 @@ struct AuthenticationDatasource {
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body = registerUserGoogleAccountRequest(googleId: googleUid, id_token: idToken, email: email)
-        
         request.httpBody = try JSONEncoder().encode(body)
         
         let (data, _) = try await URLSession.shared.data(for: request)
         let response = try JSONDecoder().decode([String: String].self, from: data)
+        print(response)
         return response["token"]!
     }
     
-    func registerUser(googleUid: String, email: String, username: String, password: String, occupation: String, token: String) async throws -> UserModel{
+    func registerUser(googleUid: String, email: String, username: String, password: String, occupation: String, token: String) async throws -> [String: Any]{
         let url = URL(string: "\(Core().baseUrl)/users/v1/google/register/\(token)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body = registerUserRequest(google_uid: googleUid, email: email, username: username, password: password, occupation: occupation)
-        
+        print(body)
         request.httpBody = try JSONEncoder().encode(body)
         
         let (data, _) = try await URLSession.shared.data(for: request)
-        let response = try JSONDecoder().decode(UserModel.self, from: data)
-        return response
+        let response = try JSONDecoder().decode(registerUserResponse.self, from: data)
+        return ["user": response.credentials, "token": response.token]
     }
     
     func loginUser(username: String?, password: String?, idToken: String?, createSession: Bool, method: String) async throws -> [String:Any]{
+        print(idToken)
         let url = URL(string: "\(Core().baseUrl)/users/v1/login?type=\(method)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

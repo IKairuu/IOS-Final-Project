@@ -15,7 +15,7 @@ struct StellaGeneratorPage: View {
     @State private var showSaved = false
     @State private var errorMessage: String?
     @State private var input: String = ""
-    @State private var socket = MessageSocketController(agent: .generator)
+    @State private var socket = MessageSocketController(agent: .generate)
     var body: some View {
         VStack(spacing: 15) {
             VStack(spacing: 0) {
@@ -62,7 +62,7 @@ struct StellaGeneratorPage: View {
     }
     
     private func loadHistory() async {
-        await MessageController().fetchMessages(token: appState.token, agent: .generator, appState: appState)
+        await MessageController().fetchMessages(token: appState.token, agent: .generate, appState: appState)
         messages = MessageController().mergeMessages(history: appState.generatorMessages, local: messages)
     }
     

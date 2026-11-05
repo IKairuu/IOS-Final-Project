@@ -11,7 +11,7 @@ struct StellaAnalyzerPage: View {
     @Environment(AppState.self) private var appState
     @State private var messages: [MessageModel] = []
     @State private var input: String = ""
-    @State private var socket = MessageSocketController(agent: .analyzer)
+    @State private var socket = MessageSocketController(agent: .analyze)
     var body: some View {
         VStack(spacing: 0) {
             ChatMessageList(messages: messages, initials: userInitials(appState.currentUser?.username))
@@ -43,7 +43,7 @@ struct StellaAnalyzerPage: View {
     }
     
     private func loadHistory() async {
-        await MessageController().fetchMessages(token: appState.token, agent: .analyzer, appState: appState)
+        await MessageController().fetchMessages(token: appState.token, agent: .analyze, appState: appState)
         messages = MessageController().mergeMessages(history: appState.analyzerMessages, local: messages)
     }
 }

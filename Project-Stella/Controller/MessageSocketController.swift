@@ -89,7 +89,6 @@ final class MessageSocketController {
                                  URLQueryItem(name: "transport", value: "websocket")]
         return components.url
     }
-    
     private func emit(_ payload: OutgoingSocketMessage) -> Bool {
         guard let socket,
               let data = try? encoder.encode(payload),

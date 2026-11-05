@@ -17,9 +17,9 @@ struct MessageController {
         do {
             let messages = sortMessages(try await MessageDatasource().getMessages(token: token, agent: agent), order: order)
             switch agent {
-            case .analyzer:
+            case .analyze:
                 appState.analyzerMessages = messages
-            case .generator:
+            case .generate:
                 appState.generatorMessages = messages
             case .summary:
                 break

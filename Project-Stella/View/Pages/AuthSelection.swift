@@ -33,6 +33,7 @@ struct AuthSelection: View {
                             try await AuthenticationController().googleSignIn()
                             let idToken = try await Auth.auth().currentUser!.getIDToken()
                             let token = try await AuthenticationDatasource().registerUserGoogleAccount(googleUid: Auth.auth().currentUser!.uid, idToken: idToken, email: Auth.auth().currentUser!.email!)
+                            print("In")
                             appState.token = token
                             appState.currentGoogleUid = Auth.auth().currentUser!.uid
                             try await AuthenticationController().logout()

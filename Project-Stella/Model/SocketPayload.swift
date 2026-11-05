@@ -8,12 +8,12 @@
 import SwiftUI
 
 nonisolated enum StellaAgent: String, Codable {
-    case analyzer = "analyzer", generator = "generator", summary = "summary"
+    case analyze = "analyze", generate = "generate", summary = "summary"
     
     var eventName: String {
         switch self {
-        case .analyzer: return "analyze"
-        case .generator: return "generate"
+        case .analyze: return "analyze"
+        case .generate: return "generate"
         case .summary: return "summary"
         }
     }
