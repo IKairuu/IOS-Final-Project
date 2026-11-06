@@ -1,20 +1,14 @@
-//
-//  StellaAnalyzerPage.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/14/26.
-//
-
 import SwiftUI
 
 struct StellaAnalyzerPage: View {
     @Environment(AppState.self) private var appState
     @State private var messages: [MessageModel] = []
     @State private var input: String = ""
+    @State private var isWaiting: Bool = false
     @State private var socket = MessageSocketController(agent: .analyze)
     var body: some View {
         VStack(spacing: 0) {
-            ChatMessageList(messages: messages, initials: userInitials(appState.currentUser?.username))
+            ChatMessageList(messages: messages, initials: userInitials(appState.currentUser?.username), isTyping: isWaiting)
             ChatInputBar(text: $input, onSend: sendMessage)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -23,6 +17,11 @@ struct StellaAnalyzerPage: View {
         .onAppear(perform: connectSocket)
         .task { await loadHistory() }
         .onDisappear { socket.disconnect() }
+        .onChange(of: socket.status) {
+            if socket.status == .disconnected {
+                isWaiting = false
+            }
+        }
     }
     
     private func sendMessage() {
@@ -30,7 +29,9 @@ struct StellaAnalyzerPage: View {
         guard !content.isEmpty else { return }
         let message = MessageModel(sender: .user, content: content)
         messages.append(message)
-        socket.send(message, userId: appState.currentUser?.id)
+        if socket.send(message, userId: appState.currentUser?.id) {
+            isWaiting = true
+        }
         input = ""
     }
     
@@ -38,7 +39,10 @@ struct StellaAnalyzerPage: View {
         if messages.isEmpty {
             messages = appState.analyzerMessages
         }
-        socket.onMessage = { messages.append($0) }
+        socket.onMessage = {
+            messages.append($0)
+            isWaiting = false
+        }
         socket.connect(token: appState.token)
     }
     

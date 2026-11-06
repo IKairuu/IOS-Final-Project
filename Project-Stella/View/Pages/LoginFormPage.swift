@@ -1,10 +1,3 @@
-//
-//  LoginFormPage.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/1/26.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -15,6 +8,7 @@ struct LoginFormPage: View {
     @State private var keepMeSignedIn: Bool = false
     @State private var switchPage: Bool = false
     @State private var err: String = ""
+    @State private var isLoading: Bool = false
     @Environment(AppState.self) private var appState
     var body: some View {
         VStack {
@@ -63,6 +57,8 @@ struct LoginFormPage: View {
             NavigationStack {
                 Button {
                     Task {
+                        isLoading = true
+                        defer { isLoading = false }
                         do {
                             err = ""
                             let login = try await AuthenticationDatasource().loginUser(username: emailInput, password: passwordInput, idToken: nil, createSession: keepMeSignedIn, method: "password")
@@ -92,6 +88,8 @@ struct LoginFormPage: View {
                 .padding(.vertical, 10)
                 Button {
                     Task {
+                        isLoading = true
+                        defer { isLoading = false }
                         do {
                             try await AuthenticationController().googleSignIn()
                             let idToken = try await Auth.auth().currentUser!.getIDToken()
@@ -160,8 +158,15 @@ struct LoginFormPage: View {
         }
         .navigationBarBackButtonHidden(true)
         .padding(40)
-        
-    } 
+        .disabled(isLoading)
+        .overlay {
+            if isLoading {
+                LoadingOverlay(message: "Logging you in...")
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isLoading)
+    }
     func loadUserData() async throws {
         guard let token = appState.token else {
             throw AuthenticationError.runtimeError("No token returned from login.")

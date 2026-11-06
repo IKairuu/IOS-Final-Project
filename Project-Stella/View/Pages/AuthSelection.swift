@@ -1,10 +1,3 @@
-//
-//  AuthSelection.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/1/26.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -12,6 +5,7 @@ import FirebaseAuth
 struct AuthSelection: View {
     @State private var err: String = ""
     @State private var switchPage: Bool = false
+    @State private var isLoading: Bool = false
     @Environment(AppState.self) private var appState
     var body: some View {
         VStack {
@@ -29,6 +23,8 @@ struct AuthSelection: View {
             NavigationStack {
                 Button {
                     Task {
+                        isLoading = true
+                        defer { isLoading = false }
                         do {
                             try await AuthenticationController().googleSignIn()
                             let idToken = try await Auth.auth().currentUser!.getIDToken()
@@ -70,7 +66,14 @@ struct AuthSelection: View {
         }
         .navigationBarBackButtonHidden(true)
         .padding(40)
-        
+        .disabled(isLoading)
+        .overlay {
+            if isLoading {
+                LoadingOverlay(message: "Setting up your account...")
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isLoading)
     }
 }
 

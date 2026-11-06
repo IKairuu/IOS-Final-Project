@@ -1,10 +1,3 @@
-//
-//  RegistrationFormPage.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/1/26.
-//
-
 import SwiftUI
 
 struct RegistrationFormPage: View {
@@ -15,6 +8,7 @@ struct RegistrationFormPage: View {
     @State private var passwordVisible: Bool = false
     @State private var switchPage: Bool = false
     @State private var err: String = ""
+    @State private var isLoading: Bool = false
     @Environment(AppState.self) private var appState
     var body: some View {
         VStack {
@@ -62,6 +56,8 @@ struct RegistrationFormPage: View {
             NavigationStack {
                 Button {
                     Task {
+                        isLoading = true
+                        defer { isLoading = false }
                         do {
                             let request = try await AuthenticationDatasource().registerUser(googleUid: appState.currentGoogleUid!, email: email, username: username, password: password, occupation: occupation, token: appState.token!)
                             appState.currentUser = request["user"] as? UserModel
@@ -100,6 +96,14 @@ struct RegistrationFormPage: View {
         }
         .navigationBarBackButtonHidden(true)
         .padding(40)
+        .disabled(isLoading)
+        .overlay {
+            if isLoading {
+                LoadingOverlay(message: "Creating your account...")
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isLoading)
     }
     
     func togglePassword(){

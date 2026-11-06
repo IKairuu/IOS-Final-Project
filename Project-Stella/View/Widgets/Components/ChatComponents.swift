@@ -1,10 +1,3 @@
-//
-//  ChatComponents.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/14/26.
-//
-
 import SwiftUI
 
 struct StellaPageSelector: View {
@@ -107,6 +100,7 @@ struct ChatBubble: View {
 struct ChatMessageList: View {
     let messages: [MessageModel]
     let initials: String
+    var isTyping: Bool = false
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -115,8 +109,14 @@ struct ChatMessageList: View {
                         ChatBubble(message: message, initials: initials)
                             .id(message.id)
                     }
+                    if isTyping {
+                        StellaTypingBubble()
+                            .id("stella-typing")
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
                 }
                 .padding(12)
+                .animation(.easeInOut(duration: 0.25), value: isTyping)
             }
             .onAppear {
                 if let lastId = messages.last?.id {
@@ -127,6 +127,13 @@ struct ChatMessageList: View {
                 if let lastId = messages.last?.id {
                     withAnimation {
                         proxy.scrollTo(lastId, anchor: .bottom)
+                    }
+                }
+            }
+            .onChange(of: isTyping) {
+                if isTyping {
+                    withAnimation {
+                        proxy.scrollTo("stella-typing", anchor: .bottom)
                     }
                 }
             }
