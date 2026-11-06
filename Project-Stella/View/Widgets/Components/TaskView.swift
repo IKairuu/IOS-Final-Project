@@ -1,10 +1,3 @@
-//
-//  TaskView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/6/26.
-//
-
 import SwiftUI
 
 struct TaskView: View {
@@ -17,12 +10,14 @@ struct TaskView: View {
     @State private var all: [ScheduleItem] = []
     var body: some View {
             VStack {
-                HStack{
+                HStack(spacing: 10) {
                     tabButton("Event", tag: 0)
                     tabButton("Task", tag: 1)
                     tabButton("All", tag: 2)
                 }
-                .padding(10)
+                .padding(.horizontal, 14)
+                .padding(.top, 14)
+                .padding(.bottom, 6)
                 if selected == 0 {
                     if events.isEmpty {
                         Spacer()
@@ -38,7 +33,9 @@ struct TaskView: View {
                                 delete(eventIds: index.map { events[$0].id })
                             }
                         }
-                        .contentMargins(.top, 0,for: .scrollContent)
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .contentMargins(.top, 4, for: .scrollContent)
                     }
                 }
                 else if selected == 1 {
@@ -56,7 +53,9 @@ struct TaskView: View {
                                 delete(taskIds: index.map { tasks[$0].id })
                             }
                         }
-                        .contentMargins(.top, 0,for: .scrollContent)
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .contentMargins(.top, 4, for: .scrollContent)
                     }
                 }
                 else {
@@ -79,7 +78,9 @@ struct TaskView: View {
                                        taskIds: removed.compactMap { if case .task(let task) = $0 { return task.id } else { return nil } })
                             }
                         }
-                        .contentMargins(.top, 0,for: .scrollContent)
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .contentMargins(.top, 4, for: .scrollContent)
                     }
                 }
             }
@@ -115,19 +116,29 @@ struct TaskView: View {
     }
 
     private func eventRow(_ item: EventModel) -> some View {
-        NavigationLink{
-            EventManagementView(event: item)
-        } label:  {
+        ZStack {
             EventSectionTab(title: item.title, description: item.description, startTime: timeText(item.startTime), endTime: timeText(item.endTime))
+            NavigationLink {
+                EventManagementView(event: item)
+            } label: {
+                EmptyView()
+            }
+            .opacity(0)
         }
+        .scheduleRow()
     }
 
     private func taskRow(_ item: TaskModel) -> some View {
-        NavigationLink{
-            TaskManagementView(task: item)
-        } label:  {
+        ZStack {
             TaskSectionTab(title: item.title, description: item.description, startTime: timeText(item.startTime), endTime: timeText(item.endTime))
+            NavigationLink {
+                TaskManagementView(task: item)
+            } label: {
+                EmptyView()
+            }
+            .opacity(0)
         }
+        .scheduleRow()
     }
 
     private func timeText(_ time: Date) -> String {
@@ -167,16 +178,7 @@ struct SectionTab: View {
     let startTime: String
     let endTime: String
     var body: some View {
-        VStack(alignment: .leading) {
-                Text(title)
-                .fontWeight(.bold)
-                Text("Time: \(startTime)-\(endTime)")
-                .padding(.bottom, 5)
-                Text("Description:")
-                Text(description ?? "There is no description")
-                .foregroundColor(Color.gray)
-            
-        }
+        ScheduleCard(title: title, description: description, startTime: startTime, endTime: endTime)
     }
 }
 
@@ -186,16 +188,7 @@ struct EventSectionTab: View {
     let startTime: String
     let endTime: String
     var body: some View {
-        VStack(alignment: .leading) {
-                Text(title)
-                .fontWeight(.bold)
-                Text("Time: \(startTime)-\(endTime)")
-                .padding(.bottom, 5)
-                Text("Description:")
-                Text(description ?? "There is no description")
-                .foregroundColor(Color.gray)
-            
-        }
+        ScheduleCard(title: title, description: description, startTime: startTime, endTime: endTime)
     }
 }
 
@@ -205,15 +198,45 @@ struct TaskSectionTab: View {
     let startTime: String
     let endTime: String
     var body: some View {
-        VStack(alignment: .leading) {
-                Text(title)
+        ScheduleCard(title: title, description: description, startTime: startTime, endTime: endTime)
+    }
+}
+
+struct ScheduleCard: View {
+    let title: String
+    let description: String?
+    let startTime: String
+    let endTime: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
                 .fontWeight(.bold)
-                Text("Time: \(startTime)-\(endTime)")
-                .padding(.bottom, 5)
+                .foregroundColor(.white)
+            Label("\(startTime) - \(endTime)", systemImage: "clock")
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.85))
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Description:")
+                    .font(.subheadline)
+                    .foregroundColor(.white)
                 Text(description ?? "There is no description")
-                .foregroundColor(Color.gray)
-            
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Design().cardColor)
+        .cornerRadius(12)
+    }
+}
+
+extension View {
+    func scheduleRow() -> some View {
+        self
+            .listRowInsets(EdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 14))
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
     }
 }
