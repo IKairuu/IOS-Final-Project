@@ -65,6 +65,10 @@ struct ChatBubble: View {
     let initials: String
     
     private var isUser: Bool { message.sender == .user }
+    private var formattedContent: AttributedString {
+        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        return (try? AttributedString(markdown: message.content, options: options)) ?? AttributedString(message.content)
+    }
     private var timestamp: String {
         let time = message.sentAt.formatted(.dateTime.hour(.twoDigits(amPM: .abbreviated)).minute(.twoDigits))
         return Calendar.current.isDateInToday(message.sentAt) ? "Today, \(time)" : message.sentAt.formatted(date: .abbreviated, time: .shortened)
@@ -76,7 +80,7 @@ struct ChatBubble: View {
                 if !isUser {
                     ChatAvatar(sender: message.sender, initials: initials)
                 }
-                Text(message.content)
+                Text(formattedContent)
                     .font(.custom("Roboto-Regular", size: 13))
                     .lineSpacing(4)
                     .foregroundColor(.white)
