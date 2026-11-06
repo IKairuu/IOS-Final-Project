@@ -1,10 +1,3 @@
-//
-//  StatisticsController.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/10/26.
-//
-
 import SwiftUI
 
 
@@ -25,39 +18,45 @@ struct StatisticsController {
         return ["Easy": easyTasks, "Medium": mediumTasks, "Hard": hardTasks]
     }
     
-    func weeklyWorkload() -> [String: [String: Any]] {
-        let weekDayGroup = Dictionary(grouping: testTask){ task in
-            Calendar.current.component(.weekday, from: task.startTime)
-        }
-        var result: [String: [String: Any]] =
-        [
-            "1": ["Day": "Sun", "Vacancy": 24.0, "Workload": 0.0],
-            "2": ["Day": "Mon", "Vacancy": 24.0, "Workload": 0.0],
-            "3": ["Day": "Tue", "Vacancy": 24.0, "Workload": 0.0],
-            "4": ["Day": "Wed", "Vacancy": 24.0, "Workload": 0.0],
-            "5": ["Day": "Thu", "Vacancy": 24.0, "Workload": 0.0],
-            "6": ["Day": "Fri", "Vacancy": 24.0, "Workload": 0.0],
-            "7": ["Day": "Sat", "Vacancy": 24.0, "Workload": 0.0],]
-        print(weekDayGroup[7])
-        for (dayNum, val) in weekDayGroup {
-            print(val)
-            var workload = 0.0
-            for dayVals in val {
-                let diffSec = Int(dayVals.endTime.timeIntervalSince(dayVals.startTime))
-                let hours = Double(diffSec / 3600)
-                let minutes = Double((diffSec % 3600) / 60) * 0.01
-                workload += Double(hours + minutes)
-                if let current = result["\(dayNum)"]?["Vacancy"] as? Double {
-                    result["\(dayNum)"]?["Vacancy"] = current - workload
-                }
-                print("\(dayNum): \nHours: \(hours)\nMinutes: \(minutes)\nTotal: \(workload)\ndiffsec: \(diffSec)\n")
-                
+    func weeklyWorkload(tasks: [TaskModel] = testTask, now: Date = Date()) -> [String: [String: Any]] {
+        let calendar = Calendar.current
+        let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: now) else { return [:] }
+        var slices: [Int: [DateInterval]] = [:]
+        for task in tasks where task.endTime > task.startTime {
+            var cursor = max(task.startTime, week.start)
+            let end = min(task.endTime, week.end)
+            while cursor < end {
+                let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: cursor)) ?? end
+                let sliceEnd = min(nextDay, end)
+                slices[calendar.component(.weekday, from: cursor), default: []].append(DateInterval(start: cursor, end: sliceEnd))
+                cursor = sliceEnd
             }
-            print("Workload: \(workload) for day: \(dayNum) Vacancy: \(result["\(dayNum)"]?["Vacancy"], default: "None")\n")
-            result["\(dayNum)"]?["Workload"] = workload
         }
-        print(result)
+        var result: [String: [String: Any]] = [:]
+        for weekday in 1...7 {
+            let workload = busyHours(slices[weekday] ?? [])
+            result["\(weekday)"] = ["Day": dayNames[weekday - 1], "Vacancy": max(24 - workload, 0), "Workload": workload]
+        }
         return result
     }
-}
 
+    private func busyHours(_ slices: [DateInterval]) -> Double {
+        var total: TimeInterval = 0
+        var current: DateInterval?
+        for slice in slices.sorted(by: { $0.start < $1.start }) {
+            if let active = current, slice.start <= active.end {
+                current = DateInterval(start: active.start, end: max(active.end, slice.end))
+            } else {
+                if let active = current {
+                    total += active.duration
+                }
+                current = slice
+            }
+        }
+        if let active = current {
+            total += active.duration
+        }
+        return min((total / 3600 * 100).rounded() / 100, 24)
+    }
+}

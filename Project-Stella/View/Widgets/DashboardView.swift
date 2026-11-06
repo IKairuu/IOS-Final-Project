@@ -197,7 +197,7 @@ struct Statistics: View {
             .padding(.horizontal, 20)
             
             Chart {
-                ForEach(Array(workloadData), id: \.key){ key, value in
+                ForEach(workloadData.sorted { $0.key < $1.key }, id: \.key){ key, value in
                     if let day = value["Day"] as? String, let workload = value["Workload"] as? Double {
                         BarMark(x: .value("Day", day), y: .value("Hours", workload))
                             .foregroundStyle(Design().statWorkColor)
@@ -210,6 +210,10 @@ struct Statistics: View {
                 }
             }
             .chartForegroundStyleScale(["Workload": Design().statWorkColor, "Vacancy": Design().statVacColor])
+            .chartYScale(domain: 0...24)
+            .chartYAxis {
+                AxisMarks(values: [0, 6, 12, 18, 24])
+            }
             .padding(10)
             .frame(maxWidth: .infinity, maxHeight: 200)
             .background(Design().cardColor)
