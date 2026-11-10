@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct TaskView: View {
+    private static let dateTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "dd-MM-yyyy h:mm a"
+        return formatter
+    }()
     @Binding var selected: Int
     var date: Date = Date()
     @Environment(AppState.self) private var appState
@@ -142,7 +148,7 @@ struct TaskView: View {
     }
 
     private func timeText(_ time: Date) -> String {
-        time.formatted(.dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute(.twoDigits))
+        TaskView.dateTimeFormatter.string(from: time)
     }
 
     private func reload() {
@@ -212,9 +218,12 @@ struct ScheduleCard: View {
             Text(title)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-            Label("\(startTime) - \(endTime)", systemImage: "clock")
-                .font(.subheadline)
-                .foregroundColor(.white.opacity(0.85))
+            VStack(alignment: .leading, spacing: 4) {
+                Label("Start: \(startTime)", systemImage: "calendar")
+                Label("End: \(endTime)", systemImage: "clock")
+            }
+            .font(.subheadline)
+            .foregroundColor(.white.opacity(0.85))
             VStack(alignment: .leading, spacing: 2) {
                 Text("Description:")
                     .font(.subheadline)
