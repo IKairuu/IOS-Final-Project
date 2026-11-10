@@ -77,6 +77,10 @@ struct DashboardCompanionPreview: View {
     @Environment(AppState.self) private var appState
     @State private var socket = MessageSocketController(agent: .summary)
     @State private var summary: String?
+    private var formattedContent: AttributedString {
+        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        return (try? AttributedString(markdown: summary ?? statusText, options: options)) ?? AttributedString(summary ?? statusText)
+    }
     var body: some View {
             VStack {
                 VStack {
@@ -94,7 +98,7 @@ struct DashboardCompanionPreview: View {
                         }
                     }
                     ScrollView {
-                        Text(summary ?? statusText)
+                        Text(formattedContent)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }

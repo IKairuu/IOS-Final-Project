@@ -8,6 +8,6 @@
 import SwiftUI
 
 struct Core {
-    let baseUrl = "https://eye-push-names-meet.trycloudflare.com"
-    let socketUrl = "https://eye-push-names-meet.trycloudflare.com"
+    let baseUrl = "https://psychology-leaves-thumb-appointments.trycloudflare.com"
+    let socketUrl = "https://psychology-leaves-thumb-appointments.trycloudflare.com"
 }
