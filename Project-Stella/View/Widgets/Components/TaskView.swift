@@ -11,6 +11,8 @@ struct TaskView: View {
     var date: Date = Date()
     @Environment(AppState.self) private var appState
     @State private var errorMessage: String?
+    @State private var isDeleting: Bool = false
+    @State private var deletedMessage: String?
     @State private var events: [EventModel] = []
     @State private var tasks: [TaskModel] = []
     @State private var all: [ScheduleItem] = []
@@ -93,6 +95,11 @@ struct TaskView: View {
             .padding(.bottom, 10)
             .onAppear(perform: reload)
             .onChange(of: date) { reload() }
+            .alert("Deleted", isPresented: Binding(get: { deletedMessage != nil }, set: { if !$0 { deletedMessage = nil } })) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(deletedMessage ?? "")
+            }
             .alert("Can't delete", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
                 Button("OK", role: .cancel) { }
             } message: {
@@ -101,6 +108,12 @@ struct TaskView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 300)
             .background(Design().secondaryColor)
+            .overlay {
+                if isDeleting {
+                    SpinnerOverlay()
+                }
+            }
+            .allowsHitTesting(!isDeleting)
             .cornerRadius(15)
             .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
         
@@ -160,11 +173,17 @@ struct TaskView: View {
     private func delete(eventIds: [String] = [], taskIds: [String] = []) {
         guard !eventIds.isEmpty || !taskIds.isEmpty else { return }
         let token = appState.token
+        isDeleting = true
         Task {
             let taskError = await TaskController().deleteTasks(token: token, ids: taskIds)
             let eventError = await EventController().deleteEvents(token: token, ids: eventIds)
-            errorMessage = taskError ?? eventError
             reload()
+            isDeleting = false
+            if let error = taskError ?? eventError {
+                errorMessage = error
+            } else {
+                deletedMessage = deletedText(eventCount: eventIds.count, taskCount: taskIds.count)
+            }
         }
         events.removeAll { eventIds.contains($0.id) }
         tasks.removeAll { taskIds.contains($0.id) }
@@ -174,6 +193,16 @@ struct TaskView: View {
             case .task(let task): return !taskIds.contains(task.id)
             }
         }
+    }
+
+    private func deletedText(eventCount: Int, taskCount: Int) -> String {
+        if eventCount > 0 && taskCount > 0 {
+            return "The selected events and tasks were deleted."
+        }
+        if eventCount > 0 {
+            return eventCount == 1 ? "The event was deleted." : "\(eventCount) events were deleted."
+        }
+        return taskCount == 1 ? "The task was deleted." : "\(taskCount) tasks were deleted."
     }
 }
 

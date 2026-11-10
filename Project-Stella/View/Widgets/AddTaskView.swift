@@ -1,10 +1,3 @@
-//
-//  AddTaskView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/6/26.
-//
-
 import SwiftUI
 
 struct AddTaskView: View {
@@ -12,6 +5,7 @@ struct AddTaskView: View {
     @Environment(AppState.self) private var appState
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
+    @State private var isSaving: Bool = false
     @State private var selectedStartDate = Date()
     @State private var selectedEndDate = Date().addingTimeInterval(3600)
     @State private var taskName: String = ""
@@ -79,7 +73,9 @@ struct AddTaskView: View {
                 
                 Button {
                     Task {
+                        isSaving = true
                         errorMessage = await TaskController().addTask(token: appState.token, taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
+                        isSaving = false
                         if errorMessage == nil {
                             showSaved = true
                         }
@@ -94,9 +90,15 @@ struct AddTaskView: View {
                         .cornerRadius(20)
                         .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
                 }
+                .disabled(isSaving)
             }
             .padding(20)
             
+        }
+        .overlay {
+            if isSaving {
+                SpinnerOverlay()
+            }
         }
         .alert("Task added", isPresented: $showSaved) {
             Button("OK") { dismiss() }

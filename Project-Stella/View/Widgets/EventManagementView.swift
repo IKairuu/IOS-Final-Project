@@ -1,10 +1,3 @@
-//
-//  EventManagementView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/10/26.
-//
-
 import SwiftUI
 
 struct EventManagementView: View {
@@ -13,6 +6,7 @@ struct EventManagementView: View {
     let event: EventModel
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
+    @State private var isSaving: Bool = false
     @State private var selectedStartDate: Date
     @State private var selectedEndDate: Date
     @State private var eventName: String
@@ -53,7 +47,9 @@ struct EventManagementView: View {
                 .padding(10)
                 Button {
                     Task {
+                        isSaving = true
                         errorMessage = await EventController().updateEvent(token: appState.token, eventId: event.id, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
+                        isSaving = false
                         if errorMessage == nil {
                             showSaved = true
                         }
@@ -68,10 +64,17 @@ struct EventManagementView: View {
                         .cornerRadius(20)
                         .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
                 }
+                .disabled(isSaving)
             }
             .padding(20)
 
         }
+        .overlay {
+            if isSaving {
+                SpinnerOverlay()
+            }
+        }
+        .navigationBarBackButtonHidden(isSaving)
         .navigationTitle("Edit Event")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Event updated", isPresented: $showSaved) {

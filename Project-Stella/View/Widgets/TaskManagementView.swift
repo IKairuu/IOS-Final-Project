@@ -1,9 +1,3 @@
-//
-//  TaskManagementView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/13/26.
-//
 import SwiftUI
 
 struct TaskManagementView: View {
@@ -12,6 +6,7 @@ struct TaskManagementView: View {
     let task: TaskModel
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
+    @State private var isSaving: Bool = false
     @State private var selectedStartDate: Date
     @State private var selectedEndDate: Date
     @State private var taskName: String
@@ -90,7 +85,9 @@ struct TaskManagementView: View {
 
                 Button {
                     Task {
+                        isSaving = true
                         errorMessage = await TaskController().updateTask(token: appState.token, taskId: task.id, taskName: taskName, taskDescription: taskDescription, startTime: selectedStartDate, endTime: selectedEndDate, priority: selectedPriority, complexity: selectedComplexity)
+                        isSaving = false
                         if errorMessage == nil {
                             showSaved = true
                         }
@@ -105,10 +102,17 @@ struct TaskManagementView: View {
                         .cornerRadius(20)
                         .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
                 }
+                .disabled(isSaving)
             }
             .padding(20)
 
         }
+        .overlay {
+            if isSaving {
+                SpinnerOverlay()
+            }
+        }
+        .navigationBarBackButtonHidden(isSaving)
         .navigationTitle("Edit Task")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Task updated", isPresented: $showSaved) {

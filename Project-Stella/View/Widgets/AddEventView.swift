@@ -1,10 +1,3 @@
-//
-//  AddEventView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/8/26.
-//
-
 import SwiftUI
 
 struct AddEventView: View {
@@ -12,6 +5,7 @@ struct AddEventView: View {
     @Environment(AppState.self) private var appState
     @State private var errorMessage: String?
     @State private var showSaved: Bool = false
+    @State private var isSaving: Bool = false
     @State private var selectedStartDate = Date()
     @State private var selectedEndDate = Date().addingTimeInterval(3600)
     @State private var eventName: String = ""
@@ -43,7 +37,9 @@ struct AddEventView: View {
                 .padding(10)
                 Button {
                     Task {
+                        isSaving = true
                         errorMessage = await EventController().addEvent(token: appState.token, eventName: eventName, eventDetail: eventDetail, startTime: selectedStartDate, endTime: selectedEndDate)
+                        isSaving = false
                         if errorMessage == nil {
                             showSaved = true
                         }
@@ -58,9 +54,15 @@ struct AddEventView: View {
                         .cornerRadius(20)
                         .shadow(color: .black.opacity(0.4), radius: 5, x: 0, y: 5)
                 }
+                .disabled(isSaving)
             }
             .padding(20)
             
+        }
+        .overlay {
+            if isSaving {
+                SpinnerOverlay()
+            }
         }
         .alert("Event added", isPresented: $showSaved) {
             Button("OK") { dismiss() }

@@ -60,10 +60,24 @@ struct LoadingOverlay: View {
     }
 }
 
+struct SpinnerOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+            ProgressView()
+                .progressViewStyle(.circular)
+                .controlSize(.large)
+                .tint(.white)
+        }
+    }
+}
+
 #Preview {
     VStack(spacing: 30) {
         StellaTypingBubble()
         LoadingOverlay(message: "Logging you in...")
+        SpinnerOverlay()
     }
     .padding(20)
     .background(Design().secondaryColor)
