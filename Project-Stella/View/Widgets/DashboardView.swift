@@ -1,10 +1,3 @@
-//
-//  DashboardView.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/10/26.
-//
-
 import SwiftUI
 import Charts
 
@@ -75,11 +68,11 @@ struct TopSection: View {
 
 struct DashboardCompanionPreview: View {
     @Environment(AppState.self) private var appState
-    @State private var socket = MessageSocketController(agent: .summary)
-    @State private var summary: String?
+    private var overview: OverviewController { appState.overview }
     private var formattedContent: AttributedString {
+        let text = overview.summary ?? statusText
         let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-        return (try? AttributedString(markdown: summary ?? statusText, options: options)) ?? AttributedString(summary ?? statusText)
+        return (try? AttributedString(markdown: text, options: options)) ?? AttributedString(text)
     }
     var body: some View {
             VStack {
@@ -93,7 +86,7 @@ struct DashboardCompanionPreview: View {
                         Text("Stella AI")
                             .fontWeight(.bold)
                         Spacer()
-                        if socket.status == .connecting {
+                        if overview.isLoading {
                             ProgressView()
                         }
                     }
@@ -108,27 +101,20 @@ struct DashboardCompanionPreview: View {
             .frame(height: 240)
             .background(Design().secondaryColor)
             .cornerRadius(15)
-            .onAppear(perform: connectSocket)
-            .onDisappear { socket.disconnect() }
-            .onChange(of: socket.status) { _, status in
-                if status == .connected && summary == nil {
-                    socket.requestSummary(userId: appState.currentUser?.id)
-                }
+            .onAppear {
+                overview.load(token: appState.token, userId: appState.currentUser?.id)
             }
         
     }
     
     private var statusText: String {
-        switch socket.status {
-        case .connected: return "Stella is analyzing your schedule..."
-        case .connecting: return "Connecting to Stella..."
-        case .disconnected: return "Stella is offline right now. Your daily summary will show here once it reconnects."
+        if !overview.isLoading {
+            return "Stella is offline right now. Your daily summary will show here once it reconnects."
         }
-    }
-    
-    private func connectSocket() {
-        socket.onMessage = { summary = $0.content }
-        socket.connect(token: appState.token)
+        switch overview.socket.status {
+        case .connected: return "Stella is analyzing your schedule..."
+        case .connecting, .disconnected: return "Connecting to Stella..."
+        }
     }
 }
 

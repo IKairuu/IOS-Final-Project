@@ -1,10 +1,3 @@
-//
-//  AppState.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 9/24/26.
-//
-
 import SwiftUI
 
 enum SessionStatus {
@@ -21,4 +14,5 @@ class AppState {
     var rootId = UUID()
     var analyzerMessages: [MessageModel] = []
     var generatorMessages: [MessageModel] = []
+    var overview = OverviewController()
 }

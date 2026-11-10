@@ -1,10 +1,3 @@
-//
-//  MessageSocketController.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/14/26.
-//
-
 import SwiftUI
 
 @MainActor
@@ -15,6 +8,8 @@ final class MessageSocketController {
     
     var onMessage: ((MessageModel) -> Void)?
     var onTasks: (([TaskModel]) -> Void)?
+    var onConnect: (() -> Void)?
+    var onClose: (() -> Void)?
     
     private let agent: StellaAgent
     private var socket: URLSessionWebSocketTask?
@@ -124,6 +119,7 @@ final class MessageSocketController {
         } else if packet.hasPrefix("40") {
             status = .connected
             reconnectAttempts = 0
+            onConnect?()
         } else if packet.hasPrefix("41") {
             handleFailure(nil)
         } else if packet.hasPrefix("0") {
@@ -166,7 +162,10 @@ final class MessageSocketController {
         socket?.cancel(with: .goingAway, reason: nil)
         socket = nil
         status = .disconnected
-        guard reconnectAttempts < maxReconnectAttempts else { return }
+        guard reconnectAttempts < maxReconnectAttempts else {
+            onClose?()
+            return
+        }
         reconnectAttempts += 1
         Task { @MainActor in
             try? await Task.sleep(for: .seconds(2))

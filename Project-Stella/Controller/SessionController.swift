@@ -1,10 +1,3 @@
-//
-//  SessionController.swift
-//  Project-Stella
-//
-//  Created by Mac-LAB on 10/28/26.
-//
-
 import SwiftUI
 
 struct SessionController {
@@ -63,6 +56,7 @@ struct SessionController {
         testEvents = []
         appState.analyzerMessages = []
         appState.generatorMessages = []
+        appState.overview.reset()
         appState.sessionStatus = .signedOut
         appState.rootId = UUID()
     }
